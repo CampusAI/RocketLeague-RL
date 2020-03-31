@@ -1,0 +1,10 @@
+# Ignore everything
+*
+
+# But not these files...
+!.gitignore
+!/Assets
+Assets/*
+!/Assets/Scrips
+!/Assets/Scrips/*
+/Assets/Scrips/*.meta
