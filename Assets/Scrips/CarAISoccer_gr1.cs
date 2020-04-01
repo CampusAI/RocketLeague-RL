@@ -21,6 +21,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public GameObject own_goal;
         public GameObject other_goal;
+
         public GameObject ball;
 
 
@@ -42,7 +43,9 @@ namespace UnityStandardAssets.Vehicles.Car
             friends = GameObject.FindGameObjectsWithTag(friend_tag);
             enemies = GameObject.FindGameObjectsWithTag(enemy_tag);
 
-            ball = GameObject.FindGameObjectWithTag("Ball");
+
+
+            // ball = GameObject.FindGameObjectWithTag("Ball");
 
 
             // Plan your path here
@@ -110,8 +113,8 @@ namespace UnityStandardAssets.Vehicles.Car
 
             // this is how you control the car
             //Debug.Log("Steering:" + steering + " Acceleration:" + acceleration);
-            m_Car.Move(steering, acceleration, acceleration, 0f);
-            //m_Car.Move(0f, -1f, 1f, 0f);
+            // m_Car.Move(steering, acceleration, acceleration, 0f);
+            m_Car.Move(0f, 1f, 1f, 0f);
 
 
         }
