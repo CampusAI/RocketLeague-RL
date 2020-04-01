@@ -8,3 +8,5 @@ Assets/*
 !/Assets/Scrips
 !/Assets/Scrips/*
 /Assets/Scrips/*.meta
+!/train_configs
+!/train_configs/*
