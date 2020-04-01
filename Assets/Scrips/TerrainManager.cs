@@ -34,7 +34,6 @@ public class TerrainManager : MonoBehaviour {
         myInfo.wall_height = wall_height; // a bit ugly...
         // myInfo.CreateCubes();  // Dont create cubes
 
-
         // this code is used to create new terrains and obstacles
         //myInfo.TerrainInfo2();
         //myInfo.file_name = "test88";
