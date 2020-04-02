@@ -16,7 +16,7 @@ namespace UnityStandardAssets.Vehicles.Car
         public int red_score = 0;
 
         private List<GameObject> players;
-        private float game_length = 100;
+        private float game_length = 5000; // In frames
         private float start_time;
 
         // Start is called before the first frame update
@@ -30,10 +30,13 @@ namespace UnityStandardAssets.Vehicles.Car
         }
 
         // Update is called once per frame
-        void Update()
+        int frames_counter = 0;
+        void FixedUpdate()
         {
-            if (Time.time - start_time > game_length) {
+            frames_counter ++;
+            if (frames_counter > game_length) {
                 ResetGame();
+                frames_counter = 0;
             }
         }
 
@@ -55,7 +58,6 @@ namespace UnityStandardAssets.Vehicles.Car
             //Debug.Log(collision.gameObject.name);
             if (collision.gameObject.name == "Blue_goal")
             {
-                Debug.Log("Red scored!");
                 red_score = red_score + 1;
                 foreach (GameObject player in players)
                     player.gameObject.GetComponent<CarRLAgent>().goal("Red");
@@ -63,7 +65,6 @@ namespace UnityStandardAssets.Vehicles.Car
             }
             if (collision.gameObject.name == "Red_goal")
             {
-                Debug.Log("Blue scored!");
                 blue_score = blue_score + 1;
                 foreach (GameObject player in players)
                     player.gameObject.GetComponent<CarRLAgent>().goal("Blue");
