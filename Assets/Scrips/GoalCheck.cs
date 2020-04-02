@@ -16,7 +16,7 @@ namespace UnityStandardAssets.Vehicles.Car
         public int red_score = 0;
 
         private List<GameObject> players;
-        private float game_length = 5;
+        private float game_length = 200;
         private float start_time;
 
         // Start is called before the first frame update
@@ -62,6 +62,11 @@ namespace UnityStandardAssets.Vehicles.Car
                 foreach (GameObject player in players)
                     player.gameObject.GetComponent<CarRLAgent>().goal("Blue");
                 reset();
+            }
+            if (players.Contains(collision.gameObject)) // if a player touched it
+            {
+                if (blue_score + red_score == 0)
+                    collision.gameObject.GetComponent<CarRLAgent>().TouchedBall();
             }
         }
     }

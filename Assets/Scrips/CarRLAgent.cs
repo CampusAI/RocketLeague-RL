@@ -103,6 +103,10 @@ namespace UnityStandardAssets.Vehicles.Car
             // Debug.Log("Added goal reward");
         }
 
+        public void TouchedBall() {
+            AddReward(0.01f);
+        }
+
         public override void OnActionReceived(float[] vectorAction)
         {
             AddReward(-1f / 3000f);  // Existential penalty
