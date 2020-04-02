@@ -33,14 +33,20 @@ namespace UnityStandardAssets.Vehicles.Car
         void Update()
         {
             if (Time.time - start_time > game_length) {
-                reset();
-                foreach (GameObject player in players)
-                    player.gameObject.GetComponent<CarRLAgent>().AgentReset();
-                start_time = Time.time;
+                ResetGame();
             }
         }
 
-        public void reset() {
+        public void ResetGame() {
+            ResetBall();
+            foreach (GameObject player in players)
+                player.gameObject.GetComponent<CarRLAgent>().AgentReset();
+            blue_score = 0;
+            red_score = 0;
+            start_time = Time.time;
+        }
+
+        public void ResetBall() {
             transform.position = ball_spawn_point.transform.position;
             GetComponent<Rigidbody>().velocity = Vector3.zero;
         }
@@ -53,7 +59,7 @@ namespace UnityStandardAssets.Vehicles.Car
                 red_score = red_score + 1;
                 foreach (GameObject player in players)
                     player.gameObject.GetComponent<CarRLAgent>().goal("Red");
-                reset();
+                ResetBall();
             }
             if (collision.gameObject.name == "Red_goal")
             {
@@ -61,7 +67,7 @@ namespace UnityStandardAssets.Vehicles.Car
                 blue_score = blue_score + 1;
                 foreach (GameObject player in players)
                     player.gameObject.GetComponent<CarRLAgent>().goal("Blue");
-                reset();
+                ResetBall();
             }
             if (players.Contains(collision.gameObject)) // if a player touched it
             {
