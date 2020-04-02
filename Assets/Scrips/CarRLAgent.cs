@@ -64,17 +64,12 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public override void OnEpisodeBegin()
         {
-            // Debug.Log("starting");
-        }
-
-        public override void AgentReset()
-        {
-            // Debug.Log("agent reset");
+            Debug.Log("Episode starting");
             this.transform.position = initial_position;
             this.rBody.velocity = Vector3.zero;
             this.transform.rotation = initial_rotation;
-            EndEpisode();
         }
+
 
         public override void CollectObservations(VectorSensor sensor) {
             Vector3 ball_relative_pos =
@@ -100,13 +95,12 @@ namespace UnityStandardAssets.Vehicles.Car
             else {
                 AddReward(-1.0f);
             }
-            // Debug.Log("Added goal reward");
         }
 
         public override void OnActionReceived(float[] vectorAction)
         {
             AddReward(-1f / 3000f);  // Existential penalty
-
+            
             car_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1], 0.0f);
         }
 

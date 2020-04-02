@@ -16,7 +16,7 @@ namespace UnityStandardAssets.Vehicles.Car
         public int red_score = 0;
 
         private List<GameObject> players;
-        private float game_length = 5;
+        private float game_length = 20;
         private float start_time;
 
         // Start is called before the first frame update
@@ -35,7 +35,7 @@ namespace UnityStandardAssets.Vehicles.Car
             if (Time.time - start_time > game_length) {
                 reset();
                 foreach (GameObject player in players)
-                    player.gameObject.GetComponent<CarRLAgent>().AgentReset();
+                    player.gameObject.GetComponent<CarRLAgent>().EndEpisode();
                 start_time = Time.time;
             }
         }
