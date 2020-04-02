@@ -71,7 +71,9 @@ namespace UnityStandardAssets.Vehicles.Car
         {
             // Debug.Log("agent reset");
             this.transform.position = initial_position;
+            this.rBody.velocity = Vector3.zero;
             this.transform.rotation = initial_rotation;
+            EndEpisode();
         }
 
         public override void CollectObservations(VectorSensor sensor) {

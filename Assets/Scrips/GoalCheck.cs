@@ -16,7 +16,7 @@ namespace UnityStandardAssets.Vehicles.Car
         public int red_score = 0;
 
         private List<GameObject> players;
-        private float game_length = 100;
+        private float game_length = 5;
         private float start_time;
 
         // Start is called before the first frame update
