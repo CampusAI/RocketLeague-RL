@@ -40,7 +40,7 @@ namespace UnityStandardAssets.Vehicles.Car
         public void ResetGame() {
             ResetBall();
             foreach (GameObject player in players)
-                player.gameObject.GetComponent<CarRLAgent>().AgentReset();
+                player.gameObject.GetComponent<CarRLAgent>().EndEpisode();
             blue_score = 0;
             red_score = 0;
             start_time = Time.time;
@@ -55,7 +55,7 @@ namespace UnityStandardAssets.Vehicles.Car
             //Debug.Log(collision.gameObject.name);
             if (collision.gameObject.name == "Blue_goal")
             {
-                Debug.Log("Red scored!");
+                // Debug.Log("Red scored!");
                 red_score = red_score + 1;
                 foreach (GameObject player in players)
                     player.gameObject.GetComponent<CarRLAgent>().goal("Red");
@@ -63,7 +63,7 @@ namespace UnityStandardAssets.Vehicles.Car
             }
             if (collision.gameObject.name == "Red_goal")
             {
-                Debug.Log("Blue scored!");
+                // Debug.Log("Blue scored!");
                 blue_score = blue_score + 1;
                 foreach (GameObject player in players)
                     player.gameObject.GetComponent<CarRLAgent>().goal("Blue");
