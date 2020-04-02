@@ -4,69 +4,84 @@ using UnityEngine;
 using MLAgents;
 using MLAgents.Sensors;
 using MLAgents.Policies;
-
+// using System;
+using System.Threading;
+ 
 namespace UnityStandardAssets.Vehicles.Car
 {
     public class CarRLAgent : Agent
     {
         private string team;
         private GameObject own_goal, other_goal, ball;
+        private Transform parent;
         private List<GameObject> friends, enemies;
         private Vector3 initial_position;
         private Quaternion initial_rotation;
 
         private CarController car_controller;
         private BehaviorParameters m_BehaviorParameters;
-        private Rigidbody rBody;
+        private Rigidbody self_rBody, ball_rBody;
 
+        // private AgentAgentHelper AgentHelper = new AgentAgentHelper();
 
         void Start()
         {
+            // Debug.Log(Thread.CurrentThread.ManagedThreadId);
+            Random.seed = Thread.CurrentThread.ManagedThreadId;
             team = this.gameObject.tag;
             initial_position = this.transform.position;
             initial_rotation = this.transform.rotation;
+            parent = this.transform.parent;
+            ball = parent.Find("Soccer Ball").gameObject;
             m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
             car_controller = GetComponent<CarController>();
-            rBody = GetComponent<Rigidbody>();
-            ball = GameObject.Find("Soccer Ball");
+            self_rBody = GetComponent<Rigidbody>();
+            ball_rBody = ball.GetComponent<Rigidbody>();
             GameObject car_sphere = this.transform.Find("Sphere").gameObject;
             if (team == "Blue")
             {
                 m_BehaviorParameters.TeamId = 0;  // Set team id
                 car_sphere.GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
-                own_goal = GameObject.Find("Blue_goal");
-                other_goal = GameObject.Find("Red_goal");
+                own_goal = parent.Find("Blue_goal").gameObject;
+                other_goal = parent.Find("Red_goal").gameObject;
                 friends = new List<GameObject>();
-                foreach (GameObject go in GameObject.FindGameObjectsWithTag(team))
+
+                foreach (GameObject go in AgentHelper.FindGameObjectInChildWithTag(parent, team))
                 {
                     if (go.Equals(this.gameObject)) // I do this to exclude itself (not sure if its a good idea yet)
                         continue;
                     friends.Add(go);
                 }
-                enemies = new List<GameObject>(GameObject.FindGameObjectsWithTag("Red"));
+                enemies = new List<GameObject>(AgentHelper.FindGameObjectInChildWithTag(parent, "Red"));
             }
             else if (team == "Red")
             {
                 m_BehaviorParameters.TeamId = 1;  // Set team id
                 car_sphere.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
-                own_goal = GameObject.Find("Red_goal");
-                other_goal = GameObject.Find("Blue_goal");
+                own_goal = parent.Find("Red_goal").gameObject;
+                other_goal = parent.Find("Blue_goal").gameObject;
                 friends = new List<GameObject>();
-                foreach (GameObject go in GameObject.FindGameObjectsWithTag(team))
+                foreach (GameObject go in AgentHelper.FindGameObjectInChildWithTag(parent, team))
                 {
                     if (go.Equals(this.gameObject)) // I do this to exclude itself (not sure if its a good idea yet)
                         continue;
                     friends.Add(go);
                 }
-                enemies = new List<GameObject>(GameObject.FindGameObjectsWithTag("Blue"));
+                enemies = new List<GameObject>(AgentHelper.FindGameObjectInChildWithTag(parent, "Blue"));
             }
         }
 
         public override void OnEpisodeBegin()
         {
-            // Debug.Log("Episode starting");
-            this.transform.position = initial_position;
-            this.rBody.velocity = Vector3.zero;
+            Vector3 new_pos = new Vector3(initial_position.x, initial_position.y, initial_position.z);
+            float noise = AgentHelper.NextGaussian(0, 7);
+            // Debug.Log(noise);
+            new_pos.x += noise;
+            noise = AgentHelper.NextGaussian(0, 5);
+            new_pos.z += noise;
+            this.transform.position = new_pos; 
+
+            this.self_rBody.velocity = Vector3.zero;
             this.transform.rotation = initial_rotation;
         }
 
@@ -77,8 +92,14 @@ namespace UnityStandardAssets.Vehicles.Car
             sensor.AddObservation(ball_relative_pos.x / 190.0f);
             sensor.AddObservation(ball_relative_pos.y / 190.0f);
             sensor.AddObservation(ball_relative_pos.z / 190.0f);
+
+            Vector3 ball_relative_vel =
+                transform.InverseTransformDirection(ball_rBody.velocity);
+            sensor.AddObservation(ball_relative_vel.x / 100.0f);
+            sensor.AddObservation(ball_relative_vel.y / 100.0f);
+            sensor.AddObservation(ball_relative_vel.z / 100.0f);
             
-            Vector3 velocity_relative = transform.InverseTransformDirection(rBody.velocity);
+            Vector3 velocity_relative = transform.InverseTransformDirection(self_rBody.velocity);
             sensor.AddObservation(velocity_relative.x / 100f);  // Drift speed
             sensor.AddObservation(velocity_relative.z / 100f);
 
@@ -98,13 +119,13 @@ namespace UnityStandardAssets.Vehicles.Car
         }
 
         public void TouchedBall() {
+            // Debug.Log("Touched");
             AddReward(0.001f);
         }
 
         public override void OnActionReceived(float[] vectorAction)
         {
             AddReward(-1f / 3000f);  // Existential penalty
-            
             car_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1], 0.0f);
         }
 
