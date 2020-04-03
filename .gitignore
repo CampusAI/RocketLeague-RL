@@ -10,3 +10,5 @@ Assets/*
 /Assets/Scrips/*.meta
 !/train_configs
 !/train_configs/*
+!/training
+!/training/*
