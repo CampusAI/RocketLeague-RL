@@ -1,12 +1,8 @@
 
 import sys, pathlib, os
 parent_dir = str(pathlib.Path(__file__).resolve().parents[1])
-
-print(parent_dir)
 sys.path.append(parent_dir)
 sys.path.append(parent_dir + "/training/HyperParameter-Optimizer")
-
-print(sys.path)
 
 import subprocess
 import time
@@ -20,7 +16,7 @@ from train_instance import TrainInstance
 env_dir = os.path.join(parent_dir, "Builds")
 
 def signal_handler(sig, frame):
-    print('SIGINT signal received: killing instances...')
+    print('\nSIGINT signal received: killing instances...')
     for instance in instances:
         instance.kill()
     sys.exit(0)
@@ -53,7 +49,11 @@ if __name__ == "__main__":
         instances.append(TrainInstance(env_path=env_path, port=i))
     
     # Start training all instances
-    candidates = gp_search.get_next_candidate(num_instances)
+    candidates = []
+    if gpro_input_file is None:  # If first points, sample random
+        candidates = gp_search.get_random_candidate(num_instances)
+    else:
+        candidates = gp_search.get_next_candidate(num_instances)
     for i in range(num_instances):
         instances[i].train(candidates[i])
 
