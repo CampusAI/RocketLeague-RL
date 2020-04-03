@@ -12,3 +12,5 @@ Assets/*
 !/train_configs/*
 !/training
 !/training/*
+
+!reset.sh
