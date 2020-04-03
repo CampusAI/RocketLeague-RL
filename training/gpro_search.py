@@ -23,7 +23,7 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 search_space = [
-    Integer(low=128, high=500, name='batch_size'),
+    Integer(low=128, high=2048, name='batch_size'),
     Categorical(categories=[1e5, 5e5, 1e6], name='buffer_size'),
     Real(low=0.5, high=1., name='init_entcoef'),
     Integer(low=1, high=5, name='train_interval'),
