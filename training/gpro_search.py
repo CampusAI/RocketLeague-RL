@@ -1,9 +1,13 @@
 
-import sys, pathlib
-sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
-sys.path.append(str(pathlib.Path(__file__).resolve().parents[1] + "/HyperParameter-Optimizer"))
+import sys, pathlib, os
+parent_dir = str(pathlib.Path(__file__).resolve().parents[1])
 
-import os
+print(parent_dir)
+sys.path.append(parent_dir)
+sys.path.append(parent_dir + "/training/HyperParameter-Optimizer")
+
+print(sys.path)
+
 import subprocess
 import time
 import io
@@ -13,8 +17,14 @@ from skopt.space import Real, Integer, Categorical
 from gaussian_process import GaussianProcessSearch
 from train_instance import TrainInstance
 
-parent_dir = str(pathlib.Path(__file__).resolve().parents[1])
-env_dir = os.join(parent_dir, "Builds")
+env_dir = os.path.join(parent_dir, "Builds")
+
+def signal_handler(sig, frame):
+    print('SIGINT signal received: killing instances...')
+    for instance in instances:
+        instance.kill()
+    sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
 
 search_space = [
     Integer(low=128, high=2048, name='batch_size'),
@@ -26,17 +36,10 @@ search_space = [
     Integer(low=128, high=512, name='hidden_units'),
     ]
 
-def signal_handler(sig, frame):
-    print('SIGINT signal received: killing instances...')
-    for instance in instances:
-        instance.kill()
-    sys.exit(0)
-signal.signal(signal.SIGINT, signal_handler)
-
 if __name__ == "__main__":
     num_instances = 2
     gpro_input_file = None  # Use None to start from zero
-    env_path = os.join(env_dir, "multiple_instances.x86_64")
+    env_path = os.path.join(env_dir, "multiple_instances.x86_64")
 
     gp_search = GaussianProcessSearch(search_space=search_space,
                                     fixed_space={},
@@ -47,7 +50,7 @@ if __name__ == "__main__":
     # Instantiate training instances
     instances = []
     for i in range(num_instances):
-        instances.append(TrainInstance(env_path))
+        instances.append(TrainInstance(env_path=env_path, port=i))
     
     # Start training all instances
     candidates = gp_search.get_next_candidate(num_instances)
