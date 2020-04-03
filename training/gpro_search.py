@@ -67,6 +67,8 @@ if __name__ == "__main__":
             elif instance.is_done():
                 instance_params = instance.meta_params
                 instance_result = instance.get_val()
+                print("instance_params:", instance_params)
+                print("instance_result:", instance_result)
                 gp_search.add_point_value(instance_params, instance_result)
                 gp_search.save_values()
                 instance.kill()

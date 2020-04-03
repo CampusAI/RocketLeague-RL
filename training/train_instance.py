@@ -78,14 +78,15 @@ class TrainInstance:
         """
         with open(self.output_file, 'r') as f:
             lines = f.read().splitlines()
-            for i in range(10):  # Check the last 50 lines for a mean reward
+            for i in range(50):  # Check the last 50 lines for a mean reward
                 try:
                     last_line = lines[-i]
                     if "Mean Reward:" in last_line:
                         # TODO some fancy heuristic instead of last value
-                        val = float(last_line.split("Mean Reward:")[1].split(". Std of Reward"))
+                        val = float(last_line.split("Mean Reward: ")[1].split(". Std of Reward")[0])
                         return val
-                except:
+                except Exception as e:
+                    print(e)
                     pass
         return 0
 
