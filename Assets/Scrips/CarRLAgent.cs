@@ -21,6 +21,7 @@ namespace UnityStandardAssets.Vehicles.Car
         private CarController car_controller;
         private BehaviorParameters m_BehaviorParameters;
         private Rigidbody self_rBody, ball_rBody;
+        private GoalCheck goalCheck;
 
         // private AgentAgentHelper AgentHelper = new AgentAgentHelper();
 
@@ -37,6 +38,7 @@ namespace UnityStandardAssets.Vehicles.Car
             car_controller = GetComponent<CarController>();
             self_rBody = GetComponent<Rigidbody>();
             ball_rBody = ball.GetComponent<Rigidbody>();
+            goalCheck = ball.GetComponent<GoalCheck>();
             GameObject car_sphere = this.transform.Find("Sphere").gameObject;
             if (team == "Blue")
             {
@@ -73,6 +75,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public override void OnEpisodeBegin()
         {
+            goalCheck.ResetGame();
             Vector3 new_pos = new Vector3(initial_position.x, initial_position.y, initial_position.z);
             float noise = AgentHelper.NextGaussian(0, 7);
             // Debug.Log(noise);
@@ -89,24 +92,24 @@ namespace UnityStandardAssets.Vehicles.Car
         public override void CollectObservations(VectorSensor sensor) {
             Vector3 ball_relative_pos =
                 transform.InverseTransformDirection(ball.transform.position - transform.position);
-            sensor.AddObservation(ball_relative_pos.x / 190.0f);
-            sensor.AddObservation(ball_relative_pos.y / 190.0f);
-            sensor.AddObservation(ball_relative_pos.z / 190.0f);
+            sensor.AddObservation(ball_relative_pos.x / 200.0f);
+            sensor.AddObservation(ball_relative_pos.y / 200.0f);
+            sensor.AddObservation(ball_relative_pos.z / 200.0f);
 
             Vector3 ball_relative_vel =
                 transform.InverseTransformDirection(ball_rBody.velocity);
-            sensor.AddObservation(ball_relative_vel.x / 100.0f);
-            sensor.AddObservation(ball_relative_vel.y / 100.0f);
-            sensor.AddObservation(ball_relative_vel.z / 100.0f);
+            sensor.AddObservation(ball_relative_vel.x / 50.0f);
+            sensor.AddObservation(ball_relative_vel.y / 50.0f);
+            sensor.AddObservation(ball_relative_vel.z / 50.0f);
             
             Vector3 velocity_relative = transform.InverseTransformDirection(self_rBody.velocity);
-            sensor.AddObservation(velocity_relative.x / 100f);  // Drift speed
-            sensor.AddObservation(velocity_relative.z / 100f);
+            sensor.AddObservation(velocity_relative.x / 50f);  // Drift speed
+            sensor.AddObservation(velocity_relative.z / 50f);
 
             Vector3 other_goal_relative_pos =
                 transform.InverseTransformDirection(other_goal.transform.position - transform.position);
-            sensor.AddObservation(other_goal_relative_pos.x / 190.0f);
-            sensor.AddObservation(other_goal_relative_pos.z / 190.0f);
+            sensor.AddObservation(other_goal_relative_pos.x / 200.0f);
+            sensor.AddObservation(other_goal_relative_pos.z / 200.0f);
         }
 
         public void goal(string scoring_team) {
@@ -120,12 +123,12 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public void TouchedBall() {
             // Debug.Log("Touched");
-            AddReward(0.001f);
+            AddReward(0.01f);
         }
 
         public override void OnActionReceived(float[] vectorAction)
         {
-            AddReward(-1f / 3000f);  // Existential penalty
+            AddReward(-0.5f / maxStep);  // The total penalization in an episode is 0.5
             car_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1], 0.0f);
         }
 

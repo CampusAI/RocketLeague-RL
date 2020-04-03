@@ -16,8 +16,6 @@ namespace UnityStandardAssets.Vehicles.Car
         public int red_score = 0;
 
         private List<GameObject> players;
-        private float game_length = 5000; // In frames
-        private float start_time;
 
         // Start is called before the first frame update
         void Start()
@@ -26,27 +24,16 @@ namespace UnityStandardAssets.Vehicles.Car
             players = new List<GameObject>();
             players.AddRange(GameObject.FindGameObjectsWithTag("Blue"));
             players.AddRange(GameObject.FindGameObjectsWithTag("Red"));
-            start_time = Time.time;
         }
 
-        // Update is called once per frame
-        int frames_counter = 0;
         void FixedUpdate()
         {
-            frames_counter ++;
-            if (frames_counter > game_length) {
-                ResetGame();
-                frames_counter = 0;
-            }
         }
 
         public void ResetGame() {
             ResetBall();
-            foreach (GameObject player in players)
-                player.gameObject.GetComponent<CarRLAgent>().EndEpisode();
             blue_score = 0;
             red_score = 0;
-            start_time = Time.time;
         }
 
         public void ResetBall() {
