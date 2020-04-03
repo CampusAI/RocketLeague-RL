@@ -1,0 +1,3 @@
+[submodule "training/HyperParameter-Optimizer"]
+	path = training/HyperParameter-Optimizer
+	url = git@github.com:CampusAI/HyperParameter-Optimizer.git
