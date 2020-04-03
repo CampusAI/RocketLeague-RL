@@ -58,7 +58,7 @@ if __name__ == "__main__":
         instances[i].train(candidates[i])
 
     while(True):
-        time.sleep(1)  # refresh every second (could be way les)
+        time.sleep(60)  # refresh rate in seconds
         for i in range(num_instances):
             instance = instances[i]
             if instance.inactive:
@@ -70,6 +70,7 @@ if __name__ == "__main__":
                 gp_search.add_point_value(instance_params, instance_result)
                 gp_search.save_values()
                 instance.kill()
+            # print("Instance", i, "has value:", instance.get_val())
 
 
 

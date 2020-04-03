@@ -78,12 +78,15 @@ class TrainInstance:
         """
         with open(self.output_file, 'r') as f:
             lines = f.read().splitlines()
-            for i in range(50):  # Check the last 50 lines for a mean reward
-                last_line = lines[-i]
-                if "Mean Reward:" in last_line:
-                    # TODO some fancy heuristic instead of last value
-                    val = int(last_line.split("Mean Reward:")[1].split(". Std of Reward"))
-                    return val
+            for i in range(10):  # Check the last 50 lines for a mean reward
+                try:
+                    last_line = lines[-i]
+                    if "Mean Reward:" in last_line:
+                        # TODO some fancy heuristic instead of last value
+                        val = float(last_line.split("Mean Reward:")[1].split(". Std of Reward"))
+                        return val
+                except:
+                    pass
         return 0
 
     def __create_config_file(self):
@@ -92,17 +95,17 @@ class TrainInstance:
         # Join dictionaries
         params = copy.deepcopy(self.template_params)
         for key in self.meta_params.keys():
-            params[key] = self.meta_params[key]
-        # print(params)
-        # sys.exit(0)
-        # Save yaml
+            v = self.meta_params[key]
+            if not isinstance(v, (int, float, str)):  # Hack to convert np vars to native python
+                v = v.item()
+            params["default"][key] = v
         with open(self.config_dir, 'w') as outfile:
             yaml.dump(params, outfile, default_flow_style=False)
 
     def __get_command(self):
         # "mlagents-learn train_configs/config.yaml --env=Builds/multiple_instances.x86_64 --run-id=test_mi --time-scale=100 --no-graphics --base-port=5100 --train >> output.nohup"
         command = "cd " + parent_dir + "; workon py3;"
-        command = " mlagents-learn "  # I hope this works if you dont have python environments
+        command += " mlagents-learn "  # I hope this works if you dont have python environments
         command += str(self.config_dir)
         command += " --env=" + self.env_path
         command += " --run-id=" + self.id
