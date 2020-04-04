@@ -131,6 +131,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public override void OnActionReceived(float[] vectorAction)
         {
+            AddReward(-0.5f / maxStep);  // Total penalization in an episode is 0.5
             if (goal_reward > 0) {
                 AddReward(goal_reward);
                 EndEpisode();
