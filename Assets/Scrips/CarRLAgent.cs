@@ -112,23 +112,30 @@ namespace UnityStandardAssets.Vehicles.Car
             sensor.AddObservation(other_goal_relative_pos.z / 200.0f);
         }
 
+        float goal_reward = 0;
         public void goal(string scoring_team) {
             if (scoring_team == team) {
-                AddReward(1.0f);
+                //AddReward(1.0f);
+                goal_reward += 1.0f;
             }
             else {
-                AddReward(-1.0f);
+                //AddReward(-1.0f);
+                goal_reward -= 1.0f;
             }
         }
 
         public void TouchedBall() {
             // Debug.Log("Touched");
-            AddReward(0.01f);
+            //AddReward(0.01f);
         }
 
         public override void OnActionReceived(float[] vectorAction)
         {
-            AddReward(-0.5f / maxStep);  // The total penalization in an episode is 0.5
+            if (goal_reward > 0) {
+                AddReward(goal_reward);
+                EndEpisode();
+            }
+            goal_reward = 0f;
             car_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1], 0.0f);
         }
 
