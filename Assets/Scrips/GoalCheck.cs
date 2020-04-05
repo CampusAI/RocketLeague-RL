@@ -14,7 +14,6 @@ namespace UnityStandardAssets.Vehicles.Car
         public GameObject ball_spawn_point;
         public int blue_score = 0;
         public int red_score = 0;
-
         private List<GameObject> players;
 
         // Start is called before the first frame update
@@ -22,12 +21,8 @@ namespace UnityStandardAssets.Vehicles.Car
         {
             transform.position = ball_spawn_point.transform.position;
             players = new List<GameObject>();
-            players.AddRange(GameObject.FindGameObjectsWithTag("Blue"));
-            players.AddRange(GameObject.FindGameObjectsWithTag("Red"));
-        }
-
-        void FixedUpdate()
-        {
+            players.AddRange(AgentHelper.FindGameObjectInChildWithTag(transform.parent, "Blue"));
+            players.AddRange(AgentHelper.FindGameObjectInChildWithTag(transform.parent, "Red"));
         }
 
         public void ResetGame() {
@@ -48,14 +43,12 @@ namespace UnityStandardAssets.Vehicles.Car
                 red_score = red_score + 1;
                 foreach (GameObject player in players)
                     player.gameObject.GetComponent<CarRLAgent>().goal("Red");
-                ResetBall();
             }
             if (collision.gameObject.name == "Red_goal")
             {
                 blue_score = blue_score + 1;
                 foreach (GameObject player in players)
                     player.gameObject.GetComponent<CarRLAgent>().goal("Blue");
-                ResetBall();
             }
             if (players.Contains(collision.gameObject)) // if a player touched it
             {
