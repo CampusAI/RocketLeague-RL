@@ -105,7 +105,8 @@ class TrainInstance:
 
     def __get_command(self):
         # "mlagents-learn train_configs/config.yaml --env=Builds/multiple_instances.x86_64 --run-id=test_mi --time-scale=100 --no-graphics --base-port=5100 --train >> output.nohup"
-        command = "cd " + parent_dir + "; workon py3;"
+        # command = "cd " + parent_dir + "; workon py3;"
+        command = "cd " + parent_dir + ";"
         command += " mlagents-learn "  # I hope this works if you dont have python environments
         command += str(self.config_dir)
         command += " --env=" + self.env_path
