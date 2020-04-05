@@ -20,6 +20,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         private CarController car_controller;
         private BehaviorParameters m_BehaviorParameters;
+        // private DecisionRequester m_DecisionRequester;
         private Rigidbody self_rBody, ball_rBody;
         private GoalCheck goalCheck;
 
@@ -27,7 +28,6 @@ namespace UnityStandardAssets.Vehicles.Car
 
         void Start()
         {
-            Time.timeScale = 20;
             // Debug.Log(Thread.CurrentThread.ManagedThreadId);
             Random.seed = Thread.CurrentThread.ManagedThreadId;
             team = this.gameObject.tag;
@@ -132,16 +132,12 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public override void OnActionReceived(float[] vectorAction)
         {
-<<<<<<< HEAD
-            // AddReward(-0.5f / maxStep);  // The total penalization in an episode is 0.5
-=======
-            AddReward(-0.5f / maxStep);  // Total penalization in an episode is 0.5
-            if (goal_reward > 0) {
+            AddReward(- 80.0f / (maxStep*5));  // Total penalization in an episode is 0.5
+            if (goal_reward != 0) {
                 AddReward(goal_reward);
                 EndEpisode();
             }
             goal_reward = 0f;
->>>>>>> dev-federico
             car_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1], 0.0f);
         }
 
