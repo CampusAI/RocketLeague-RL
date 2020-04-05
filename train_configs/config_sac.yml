@@ -7,15 +7,15 @@ default:
     train_interval: 5
     num_update: 1
     tau: 0.005
-    time_horizon: 1600
+    time_horizon: 1400
     hidden_units: 256
     learning_rate: 1e-5
     learning_rate_schedule: constant
-    max_steps: 1.6e6
+    max_steps: 1.0e7
     normalize: false
     num_layers: 2
     sequence_length: 64
-    summary_freq: 1600
+    summary_freq: 10000
     reward_signals:
         extrinsic:
             strength: 1.0
