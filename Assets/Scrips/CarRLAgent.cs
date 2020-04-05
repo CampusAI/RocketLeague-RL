@@ -27,6 +27,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         void Start()
         {
+            Time.timeScale = 20;
             // Debug.Log(Thread.CurrentThread.ManagedThreadId);
             Random.seed = Thread.CurrentThread.ManagedThreadId;
             team = this.gameObject.tag;
@@ -128,7 +129,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public override void OnActionReceived(float[] vectorAction)
         {
-            AddReward(-0.5f / maxStep);  // The total penalization in an episode is 0.5
+            // AddReward(-0.5f / maxStep);  // The total penalization in an episode is 0.5
             car_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1], 0.0f);
         }
 
