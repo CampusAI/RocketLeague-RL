@@ -43,12 +43,14 @@ namespace UnityStandardAssets.Vehicles.Car
                 red_score = red_score + 1;
                 foreach (GameObject player in players)
                     player.gameObject.GetComponent<CarRLAgent>().goal("Red");
+                ResetBall();
             }
             if (collision.gameObject.name == "Red_goal")
             {
                 blue_score = blue_score + 1;
                 foreach (GameObject player in players)
                     player.gameObject.GetComponent<CarRLAgent>().goal("Blue");
+                ResetBall();
             }
             if (players.Contains(collision.gameObject)) // if a player touched it
             {
@@ -56,5 +58,41 @@ namespace UnityStandardAssets.Vehicles.Car
                     collision.gameObject.GetComponent<CarRLAgent>().TouchedBall();
             }
         }
+
+    public void FixedUpdate() {
+            CheckWin();
     }
+
+    public void CheckWin() {
+        int step = players[0].GetComponent<CarRLAgent>().StepCount;
+        int max_steps = players[0].GetComponent<CarRLAgent>().maxStep;
+
+        if (step >= max_steps - 10) {
+            if (blue_score == red_score) {
+                GiveRewardsAndEnd(0f, 0f);
+            } else if (blue_score > red_score) {
+                GiveRewardsAndEnd(1f, -1f);
+            } else {
+                GiveRewardsAndEnd(-1f, 1f);
+            }
+        }
+    }
+
+    void GiveRewardsAndEnd(float blue_reward, float red_reward) {
+        foreach (GameObject player in players) {
+            CarRLAgent script = player.GetComponent<CarRLAgent>();
+            
+            if (script.GetTeam() == "Blue") {
+                script.AddReward(blue_reward);
+                script.EndEpisode();
+            } else if (script.GetTeam() == "Red"){
+                script.AddReward(red_reward);
+                script.EndEpisode();
+            } else {
+                throw new System.Exception("UNKNOWN AGENT TAG");
+            }
+        }
+    }
+    
+}
 }

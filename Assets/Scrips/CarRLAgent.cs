@@ -25,7 +25,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         // private AgentAgentHelper AgentHelper = new AgentAgentHelper();
 
-        void Start()
+        public override void Initialize()
         {
             // Debug.Log(Thread.CurrentThread.ManagedThreadId);
             Random.seed = Thread.CurrentThread.ManagedThreadId;
@@ -42,7 +42,6 @@ namespace UnityStandardAssets.Vehicles.Car
             GameObject car_sphere = this.transform.Find("Sphere").gameObject;
             if (team == "Blue")
             {
-                m_BehaviorParameters.TeamId = 0;  // Set team id
                 car_sphere.GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
                 own_goal = parent.Find("Blue_goal").gameObject;
                 other_goal = parent.Find("Red_goal").gameObject;
@@ -58,7 +57,6 @@ namespace UnityStandardAssets.Vehicles.Car
             }
             else if (team == "Red")
             {
-                m_BehaviorParameters.TeamId = 1;  // Set team id
                 car_sphere.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
                 own_goal = parent.Find("Red_goal").gameObject;
                 other_goal = parent.Find("Blue_goal").gameObject;
@@ -83,13 +81,13 @@ namespace UnityStandardAssets.Vehicles.Car
             noise = AgentHelper.NextGaussian(0, 5);
             new_pos.z += noise;
             this.transform.position = new_pos; 
-
             this.self_rBody.velocity = Vector3.zero;
             this.transform.rotation = initial_rotation;
         }
 
 
         public override void CollectObservations(VectorSensor sensor) {
+
             Vector3 ball_relative_pos =
                 transform.InverseTransformDirection(ball.transform.position - transform.position);
             sensor.AddObservation(ball_relative_pos.x / 200.0f);
@@ -101,7 +99,7 @@ namespace UnityStandardAssets.Vehicles.Car
             sensor.AddObservation(ball_relative_vel.x / 50.0f);
             sensor.AddObservation(ball_relative_vel.y / 50.0f);
             sensor.AddObservation(ball_relative_vel.z / 50.0f);
-            
+
             Vector3 velocity_relative = transform.InverseTransformDirection(self_rBody.velocity);
             sensor.AddObservation(velocity_relative.x / 50f);  // Drift speed
             sensor.AddObservation(velocity_relative.z / 50f);
@@ -110,34 +108,65 @@ namespace UnityStandardAssets.Vehicles.Car
                 transform.InverseTransformDirection(other_goal.transform.position - transform.position);
             sensor.AddObservation(other_goal_relative_pos.x / 200.0f);
             sensor.AddObservation(other_goal_relative_pos.z / 200.0f);
+
+            Vector3 enemy_rel_pos =
+                transform.InverseTransformDirection(enemies[0].transform.position - transform.position);
+            sensor.AddObservation(enemy_rel_pos.x / 200f);
+            sensor.AddObservation(enemy_rel_pos.z / 200f);
+
+            Vector3 enemy_rel_vel =
+                transform.InverseTransformDirection(enemies[0].GetComponent<Rigidbody>().velocity);
+            sensor.AddObservation(enemy_rel_vel.x / 50f);
+            sensor.AddObservation(enemy_rel_vel.z / 50f);
+
+            if (this.team == "Blue") {
+                sensor.AddObservation(goalCheck.blue_score);
+                sensor.AddObservation(goalCheck.red_score);
+            } else {
+                sensor.AddObservation(goalCheck.red_score);
+                sensor.AddObservation(goalCheck.blue_score);
+            }
         }
 
-        float goal_reward = 0;
         public void goal(string scoring_team) {
-            if (scoring_team == team) {
-                //AddReward(1.0f);
-                goal_reward += 1.0f;
-            }
-            else {
-                //AddReward(-1.0f);
-                goal_reward -= 1.0f;
-            }
+            
         }
 
         public void TouchedBall() {
-            // Debug.Log("Touched");
-            //AddReward(0.01f);
+            // Get ball->gol and ball velocity vectors without y component
+            Vector3 ball_to_goal = other_goal.transform.position - ball.transform.position;
+            ball_to_goal.y = 0;
+            Vector3 ball_vel = new Vector3(ball_rBody.velocity.x, 0, ball_rBody.velocity.z);
+
+            // Compute cos(theta) = a * b / (||a|| * ||b||)
+            float cosine = Vector3.Dot(ball_to_goal,ball_vel) / (ball_to_goal.magnitude * ball_vel.magnitude);
+            float reward = Mathf.Pow(cosine, 7);
+            //if (float.IsNaN(reward) || reward < 0.01) {
+            //    AddReward(0.0f);
+            //} else {
+            //    AddReward(reward);
+            //}
         }
 
+        private void draw_rew_dir(float pow) {
+            Vector3 ball_to_goal = (other_goal.transform.position - ball.transform.position).normalized * 50;
+            Debug.DrawLine(ball.transform.position, ball.transform.position + ball_to_goal, Color.green, 0.1f);
+            for (int i = 0; i < 360; i++) {
+                Vector3 dir = Quaternion.Euler(0, i, 0) * ball_to_goal;
+                float cosine = Vector3.Dot(ball_to_goal, dir) / (ball_to_goal.magnitude * dir.magnitude);
+                dir *= Mathf.Abs(Mathf.Pow(cosine, pow));
+                if (cosine > 0){
+                    Debug.DrawLine(ball.transform.position, ball.transform.position + dir, Color.green, 0.1f);
+                } else {
+                    Debug.DrawLine(ball.transform.position, ball.transform.position + dir, Color.red, 0.1f);
+                }
+            }
+        }
         public override void OnActionReceived(float[] vectorAction)
         {
-            AddReward(-0.5f / maxStep);  // Total penalization in an episode is 0.5
-            if (goal_reward > 0) {
-                AddReward(goal_reward);
-                EndEpisode();
-            }
-            goal_reward = 0f;
+            //AddReward(-5f / maxStep);
             car_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1], 0.0f);
+            //draw_rew_dir(7);
         }
 
         public override float[] Heuristic()
@@ -152,11 +181,13 @@ namespace UnityStandardAssets.Vehicles.Car
 
         private void FixedUpdate()
         {
-            Debug.DrawLine(transform.position, ball.transform.position, Color.black);
-            Debug.DrawLine(transform.position, own_goal.transform.position, Color.green);
-            Debug.DrawLine(transform.position, other_goal.transform.position, Color.yellow);
+            //Debug.DrawLine(transform.position, ball.transform.position, Color.black);
+            //Debug.DrawLine(transform.position, own_goal.transform.position, Color.green);
+            //Debug.DrawLine(transform.position, other_goal.transform.position, Color.yellow);
             // Debug.DrawLine(transform.position, enemies[0].transform.position, Color.magenta);
             // car_controller.Move(0f, 1f, 1f, 0f);
         }
+
+        public string GetTeam() {return team;}
     }
 }
