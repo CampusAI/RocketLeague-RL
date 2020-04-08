@@ -28,6 +28,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         void Start()
         {
+            Time.timeScale = 20;
             // Debug.Log(Thread.CurrentThread.ManagedThreadId);
             Random.seed = Thread.CurrentThread.ManagedThreadId;
             team = this.gameObject.tag;
