@@ -33,7 +33,7 @@ search_space = [
     ]
 
 if __name__ == "__main__":
-    num_instances = 4
+    num_instances = 3
     gpro_input_file = None  # Use None to start from zero
     env_path = os.path.join(env_dir, "Test.x86_64")
 

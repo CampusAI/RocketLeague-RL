@@ -1,0 +1,128 @@
+Traceback (most recent call last):
+  File "gpro_search.py", line 2, in <module>
+    import sys, pathlib, os
+ImportError: No module named pathlib
+Training started with PID: 22058
+Training started with PID: 22060
+Training started with PID: 22062
+instance_params: {'batch_size': 308, 'buffer_size': 1000000.0, 'init_entcoef': 0.9606954759998154, 'train_interval': 4, 'tau': 0.009627550521022607, 'num_layers': 3, 'hidden_units': 223}
+instance_result: -15.041666666666666
+Killing 22058
+Training started with PID: 23213
+instance_params: {'batch_size': 848, 'buffer_size': 100000.0, 'init_entcoef': 0.9337346618574145, 'train_interval': 3, 'tau': 0.006019024420392211, 'num_layers': 3, 'hidden_units': 416}
+instance_result: -15.87459259259259
+Killing 22062
+Training started with PID: 24181
+instance_params: {'batch_size': 590, 'buffer_size': 1000000.0, 'init_entcoef': 0.9564731635313808, 'train_interval': 3, 'tau': 0.009067602371214496, 'num_layers': 3, 'hidden_units': 228}
+instance_result: -15.561555555555557
+Killing 24181
+Training started with PID: 25199
+instance_params: {'batch_size': 389, 'buffer_size': 1000000.0, 'init_entcoef': 0.9230707147445287, 'train_interval': 4, 'tau': 0.009642517766461238, 'num_layers': 3, 'hidden_units': 178}
+instance_result: -15.565555555555555
+Killing 25199
+Training started with PID: 25703
+instance_params: {'batch_size': 244, 'buffer_size': 1000000.0, 'init_entcoef': 0.5759632745652318, 'train_interval': 4, 'tau': 0.009724734058495622, 'num_layers': 2, 'hidden_units': 215}
+instance_result: -15.99562962962963
+Killing 25703
+Training started with PID: 26342
+instance_params: {'batch_size': 2048, 'buffer_size': 500000.0, 'init_entcoef': 0.5, 'train_interval': 1, 'tau': 0.005, 'num_layers': 1, 'hidden_units': 512}
+instance_result: -15.035666666666668
+Killing 23213
+Training started with PID: 29363
+instance_params: {'batch_size': 1888, 'buffer_size': 1000000.0, 'init_entcoef': 0.6658943246416674, 'train_interval': 1, 'tau': 0.008983105042850064, 'num_layers': 2, 'hidden_units': 463}
+instance_result: -15.723703703703704
+Killing 22060
+Training started with PID: 30188
+instance_params: {'batch_size': 1395, 'buffer_size': 100000.0, 'init_entcoef': 0.6110118829949142, 'train_interval': 1, 'tau': 0.00918087694965804, 'num_layers': 1, 'hidden_units': 286}
+instance_result: -15.703333333333333
+Killing 26342
+Training started with PID: 30730
+instance_params: {'batch_size': 1078, 'buffer_size': 500000.0, 'init_entcoef': 0.9855491894501835, 'train_interval': 5, 'tau': 0.00913690926891512, 'num_layers': 1, 'hidden_units': 151}
+instance_result: -15.126925925925926
+Killing 30188
+Training started with PID: 30940
+instance_params: {'batch_size': 2009, 'buffer_size': 500000.0, 'init_entcoef': 0.5004152266323626, 'train_interval': 3, 'tau': 0.00508837905849738, 'num_layers': 1, 'hidden_units': 145}
+instance_result: -15.99488888888889
+Killing 29363
+Training started with PID: 32206
+instance_params: {'batch_size': 1698, 'buffer_size': 500000.0, 'init_entcoef': 0.7017803188145088, 'train_interval': 4, 'tau': 0.006719319468550414, 'num_layers': 1, 'hidden_units': 468}
+instance_result: -15.758296296296296
+Killing 30940
+Training started with PID: 366
+instance_params: {'batch_size': 1242, 'buffer_size': 500000.0, 'init_entcoef': 0.5296108972383076, 'train_interval': 2, 'tau': 0.005590209016950095, 'num_layers': 1, 'hidden_units': 333}
+instance_result: -15.002148148148148
+Killing 30730
+Training started with PID: 1842
+instance_params: {'batch_size': 534, 'buffer_size': 500000.0, 'init_entcoef': 0.520839640582655, 'train_interval': 4, 'tau': 0.005335200194847585, 'num_layers': 2, 'hidden_units': 432}
+instance_result: -15.416333333333332
+Killing 1842
+Training started with PID: 2799
+instance_params: {'batch_size': 1576, 'buffer_size': 100000.0, 'init_entcoef': 0.5, 'train_interval': 4, 'tau': 0.0074218172175972135, 'num_layers': 3, 'hidden_units': 512}
+instance_result: -15.995703703703704
+Killing 366
+Training started with PID: 3276
+instance_params: {'batch_size': 836, 'buffer_size': 100000.0, 'init_entcoef': 0.5, 'train_interval': 2, 'tau': 0.005295510670783118, 'num_layers': 3, 'hidden_units': 512}
+instance_result: -15.723333333333336
+Killing 32206
+Training started with PID: 3417
+instance_params: {'batch_size': 1799, 'buffer_size': 500000.0, 'init_entcoef': 0.5, 'train_interval': 4, 'tau': 0.009671629352772004, 'num_layers': 2, 'hidden_units': 361}
+instance_result: -15.348703703703704
+Killing 3417
+Training started with PID: 22338
+instance_params: {'batch_size': 1971, 'buffer_size': 500000.0, 'init_entcoef': 0.5, 'train_interval': 2, 'tau': 0.006341883623733345, 'num_layers': 1, 'hidden_units': 512}
+instance_result: -15.147814814814815
+Killing 3276
+Training started with PID: 22948
+instance_params: {'batch_size': 142, 'buffer_size': 1000000.0, 'init_entcoef': 0.9716286658883567, 'train_interval': 2, 'tau': 0.00911000752178416, 'num_layers': 2, 'hidden_units': 221}
+instance_result: -15.729296296296296
+Killing 22948
+Training started with PID: 23792
+instance_params: {'batch_size': 1774, 'buffer_size': 1000000.0, 'init_entcoef': 0.5, 'train_interval': 2, 'tau': 0.006247628504198645, 'num_layers': 2, 'hidden_units': 512}
+instance_result: -15.99748148148148
+Killing 2799
+Training started with PID: 25179
+instance_params: {'batch_size': 1035, 'buffer_size': 500000.0, 'init_entcoef': 0.5806683418592659, 'train_interval': 2, 'tau': 0.005308532535660538, 'num_layers': 1, 'hidden_units': 338}
+instance_result: -15.36174074074074
+Killing 22338
+Training started with PID: 25617
+instance_params: {'batch_size': 1355, 'buffer_size': 500000.0, 'init_entcoef': 0.5297414677977239, 'train_interval': 3, 'tau': 0.006532315643733513, 'num_layers': 2, 'hidden_units': 405}
+instance_result: -15.579259259259258
+Killing 23792
+Training started with PID: 27494
+instance_params: {'batch_size': 1388, 'buffer_size': 500000.0, 'init_entcoef': 0.5, 'train_interval': 1, 'tau': 0.006740444382114031, 'num_layers': 1, 'hidden_units': 416}
+instance_result: -15.73537037037037
+Killing 25617
+Training started with PID: 30345
+instance_params: {'batch_size': 1472, 'buffer_size': 500000.0, 'init_entcoef': 0.5183301832860396, 'train_interval': 1, 'tau': 0.007460964582176729, 'num_layers': 2, 'hidden_units': 412}
+instance_result: -15.674666666666667
+Killing 25179
+Training started with PID: 31256
+instance_params: {'batch_size': 217, 'buffer_size': 1000000.0, 'init_entcoef': 0.9667349982383208, 'train_interval': 5, 'tau': 0.007404604626986831, 'num_layers': 2, 'hidden_units': 224}
+instance_result: -15.565888888888889
+Killing 31256
+Training started with PID: 12248
+instance_params: {'batch_size': 1213, 'buffer_size': 500000.0, 'init_entcoef': 0.5657454686441816, 'train_interval': 3, 'tau': 0.007256844730116552, 'num_layers': 2, 'hidden_units': 347}
+instance_result: -15.623999999999999
+Killing 30345
+Training started with PID: 12452
+instance_params: {'batch_size': 1078, 'buffer_size': 500000.0, 'init_entcoef': 0.5, 'train_interval': 1, 'tau': 0.0077793491412688175, 'num_layers': 3, 'hidden_units': 445}
+instance_result: -15.692740740740739
+Killing 27494
+Training started with PID: 14094
+instance_params: {'batch_size': 1287, 'buffer_size': 500000.0, 'init_entcoef': 0.8375079141159159, 'train_interval': 2, 'tau': 0.007920631912674737, 'num_layers': 1, 'hidden_units': 329}
+instance_result: -15.99533333333333
+Killing 12452
+Training started with PID: 14522
+instance_params: {'batch_size': 1483, 'buffer_size': 500000.0, 'init_entcoef': 0.5, 'train_interval': 2, 'tau': 0.005914820505826134, 'num_layers': 1, 'hidden_units': 312}
+instance_result: -15.997777777777777
+Killing 12248
+Training started with PID: 14675
+instance_params: {'batch_size': 1057, 'buffer_size': 500000.0, 'init_entcoef': 0.5313095791465331, 'train_interval': 3, 'tau': 0.005404865801751548, 'num_layers': 1, 'hidden_units': 334}
+instance_result: -15.995333333333335
+Killing 14675
+Training started with PID: 15423
+instance_params: {'batch_size': 1219, 'buffer_size': 500000.0, 'init_entcoef': 0.5007766170882031, 'train_interval': 3, 'tau': 0.00547996236043536, 'num_layers': 1, 'hidden_units': 327}
+instance_result: -14.987185185185185
+Killing 14522
+Training started with PID: 15593
+instance_params: {'batch_size': 575, 'buffer_size': 100000.0, 'init_entcoef': 0.9587729223385577, 'train_interval': 2, 'tau': 0.007829423561240905, 'num_layers': 2, 'hidden_units': 221}
