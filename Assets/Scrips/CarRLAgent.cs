@@ -129,7 +129,11 @@ namespace UnityStandardAssets.Vehicles.Car
         }
 
         public void goal(string scoring_team) {
-            
+            if (scoring_team == team) {
+                AddReward(+0.5f);
+            } else {
+                AddReward(-0.5f);
+            }
         }
 
         public void TouchedBall() {
