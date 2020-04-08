@@ -136,21 +136,21 @@ namespace UnityStandardAssets.Vehicles.Car
             }
         }
 
-        public void TouchedBall() {
-            // Get ball->gol and ball velocity vectors without y component
-            Vector3 ball_to_goal = other_goal.transform.position - ball.transform.position;
-            ball_to_goal.y = 0;
-            Vector3 ball_vel = new Vector3(ball_rBody.velocity.x, 0, ball_rBody.velocity.z);
+        // public void TouchedBall() {
+        //     // Get ball->gol and ball velocity vectors without y component
+        //     Vector3 ball_to_goal = other_goal.transform.position - ball.transform.position;
+        //     ball_to_goal.y = 0;
+        //     Vector3 ball_vel = new Vector3(ball_rBody.velocity.x, 0, ball_rBody.velocity.z);
 
-            // Compute cos(theta) = a * b / (||a|| * ||b||)
-            float cosine = Vector3.Dot(ball_to_goal,ball_vel) / (ball_to_goal.magnitude * ball_vel.magnitude);
-            float reward = Mathf.Pow(cosine, 7);
-            if (!float.IsNaN(reward) && Mathf.Abs(reward) > 0.01) {
-                AddReward(reward);
-                GiveReward(reward, -reward);
-            } else {
-            }
-        }
+        //     // Compute cos(theta) = a * b / (||a|| * ||b||)
+        //     float cosine = Vector3.Dot(ball_to_goal,ball_vel) / (ball_to_goal.magnitude * ball_vel.magnitude);
+        //     float reward = Mathf.Pow(cosine, 7);
+        //     if (!float.IsNaN(reward) && Mathf.Abs(reward) > 0.01) {
+        //         AddReward(reward);
+        //         GiveReward(reward, -reward);
+        //     } else {
+        //     }
+        // }
 
         private void GiveReward(float friend_reward, float enemy_reward) {
             foreach (GameObject friend in friends) {
