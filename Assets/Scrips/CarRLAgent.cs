@@ -145,11 +145,20 @@ namespace UnityStandardAssets.Vehicles.Car
             // Compute cos(theta) = a * b / (||a|| * ||b||)
             float cosine = Vector3.Dot(ball_to_goal,ball_vel) / (ball_to_goal.magnitude * ball_vel.magnitude);
             float reward = Mathf.Pow(cosine, 7);
-            //if (float.IsNaN(reward) || reward < 0.01) {
-            //    AddReward(0.0f);
-            //} else {
-            //    AddReward(reward);
-            //}
+            if (!float.IsNaN(reward) && Mathf.Abs(reward) > 0.01) {
+                AddReward(reward);
+                GiveReward(reward, -reward);
+            } else {
+            }
+        }
+
+        private void GiveReward(float friend_reward, float enemy_reward) {
+            foreach (GameObject friend in friends) {
+                friend.GetComponent<CarRLAgent>().AddReward(friend_reward);
+            }
+            foreach (GameObject enemy in enemies) {
+                enemy.GetComponent<CarRLAgent>().AddReward(enemy_reward);
+            }
         }
 
         private void draw_rew_dir(float pow) {

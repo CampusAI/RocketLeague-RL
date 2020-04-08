@@ -54,8 +54,7 @@ namespace UnityStandardAssets.Vehicles.Car
             }
             if (players.Contains(collision.gameObject)) // if a player touched it
             {
-                if (blue_score + red_score == 0)
-                    collision.gameObject.GetComponent<CarRLAgent>().TouchedBall();
+                collision.gameObject.GetComponent<CarRLAgent>().TouchedBall();
             }
         }
 
