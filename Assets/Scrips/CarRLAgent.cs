@@ -28,7 +28,7 @@ namespace UnityStandardAssets.Vehicles.Car
         public override void Initialize()
         {
             // Debug.Log(Thread.CurrentThread.ManagedThreadId);
-            Random.seed = Thread.CurrentThread.ManagedThreadId;
+            //Random.seed = Thread.CurrentThread.ManagedThreadId;
             team = this.gameObject.tag;
             initial_position = this.transform.position;
             initial_rotation = this.transform.rotation;
@@ -85,9 +85,7 @@ namespace UnityStandardAssets.Vehicles.Car
             this.transform.rotation = initial_rotation;
         }
 
-
         public override void CollectObservations(VectorSensor sensor) {
-
             Vector3 ball_relative_pos =
                 transform.InverseTransformDirection(ball.transform.position - transform.position);
             sensor.AddObservation(ball_relative_pos.x / 200.0f);
@@ -177,6 +175,9 @@ namespace UnityStandardAssets.Vehicles.Car
         public override void OnActionReceived(float[] vectorAction)
         {
             //AddReward(-5f / maxStep);
+            //if (vectorAction[1] > 0) {
+            //    AddReward(1.0f / maxStep);
+            //}
             car_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1], 0.0f);
             //draw_rew_dir(7);
         }
