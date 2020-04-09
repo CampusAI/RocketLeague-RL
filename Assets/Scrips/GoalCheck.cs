@@ -55,10 +55,6 @@ namespace UnityStandardAssets.Vehicles.Car
                     player.gameObject.GetComponent<CarRLAgent>().goal("Blue");
                 ResetBall();
             }
-            // if (players.Contains(collision.gameObject)) // if a player touched it
-            // {
-            //     collision.gameObject.GetComponent<CarRLAgent>().TouchedBall();
-            // }
         }
 
         public void FixedUpdate() {
@@ -92,31 +88,28 @@ namespace UnityStandardAssets.Vehicles.Car
         public void CheckWin() {
             int step = players[0].GetComponent<CarRLAgent>().StepCount;
             int max_steps = players[0].GetComponent<CarRLAgent>().maxStep;
-
             if (step >= max_steps - 10) {
                 if (blue_score == red_score) {
-                    GiveRewardsAndEnd(0f, 0f);
+                    GiveFinalRewardsAndEnd(0f, 0f);
                 } else if (blue_score > red_score) {
-                    GiveRewardsAndEnd(1f, -1f);
+                    GiveFinalRewardsAndEnd(1f, -1f);
                 } else {
-                    GiveRewardsAndEnd(-1f, 1f);
+                    GiveFinalRewardsAndEnd(-1f, 1f);
                 }
-            }
         }
 
-        void GiveRewardsAndEnd(float blue_reward, float red_reward) {
-            foreach (GameObject player in players) {
-                CarRLAgent script = player.GetComponent<CarRLAgent>();
-                
-                if (script.GetTeam() == "Blue") {
-                    script.AddReward(blue_reward);
-                    script.EndEpisode();
-                } else if (script.GetTeam() == "Red"){
-                    script.AddReward(red_reward);
-                    script.EndEpisode();
-                } else {
-                    throw new System.Exception("UNKNOWN AGENT TAG");
-                }
+    void GiveFinalRewardsAndEnd(float blue_reward, float red_reward) {
+        foreach (GameObject player in players) {
+            CarRLAgent script = player.GetComponent<CarRLAgent>();
+            
+            if (script.GetTeam() == "Blue") {
+                script.AddReward(blue_reward);
+                script.EndEpisode();
+            } else if (script.GetTeam() == "Red"){
+                script.AddReward(red_reward);
+                script.EndEpisode();
+            } else {
+                throw new System.Exception("UNKNOWN AGENT TAG");
             }
         }
     }
