@@ -75,14 +75,19 @@ namespace UnityStandardAssets.Vehicles.Car
         {
             goalCheck.ResetGame();
             Vector3 new_pos = new Vector3(initial_position.x, initial_position.y, initial_position.z);
-            float noise = AgentHelper.NextGaussian(0, 7);
+            float noise = AgentHelper.NextGaussian(0, 15);
             // Debug.Log(noise);
             new_pos.x += noise;
-            noise = AgentHelper.NextGaussian(0, 5);
+            noise = AgentHelper.NextGaussian(0, 7);
             new_pos.z += noise;
             this.transform.position = new_pos; 
             this.self_rBody.velocity = Vector3.zero;
+
+            // Initial rotation woth noise
             this.transform.rotation = initial_rotation;
+            var euler = this.transform.eulerAngles;
+            euler.y += Random.Range(-80, 80);
+            this.transform.eulerAngles = euler;
         }
 
         public override void CollectObservations(VectorSensor sensor) {
@@ -144,6 +149,12 @@ namespace UnityStandardAssets.Vehicles.Car
                 sensor.AddObservation(goalCheck.red_score);
                 sensor.AddObservation(goalCheck.blue_score);
             }
+
+            // In case we wanna add something but not retrain whole model
+            sensor.AddObservation(0.0f);
+            sensor.AddObservation(0.0f);
+            sensor.AddObservation(0.0f);
+            sensor.AddObservation(0.0f);
         }
 
         public void goal(string scoring_team) {
@@ -198,5 +209,6 @@ namespace UnityStandardAssets.Vehicles.Car
         }
 
         public string GetTeam() {return team;}
+
     }
 }
