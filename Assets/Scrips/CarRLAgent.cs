@@ -150,35 +150,14 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public void goal(string scoring_team) {
             if (scoring_team == team) {
-                AddReward(+0.5f);
+                AddReward(1.0f);
             } else {
-                AddReward(-0.5f);
+                AddReward(-1.0f);
             }
         }
 
         public void TouchedBall() {
-            // Get ball->gol and ball velocity vectors without y component
-            Vector3 ball_to_goal = other_goal.transform.position - ball.transform.position;
-            ball_to_goal.y = 0;
-            Vector3 ball_vel = new Vector3(ball_rBody.velocity.x, 0, ball_rBody.velocity.z);
 
-            // Compute cos(theta) = a * b / (||a|| * ||b||)
-            float cosine = Vector3.Dot(ball_to_goal,ball_vel) / (ball_to_goal.magnitude * ball_vel.magnitude);
-            float reward = Mathf.Pow(cosine, 7);
-            if (!float.IsNaN(reward) && Mathf.Abs(reward) > 0.01) {
-                AddReward(reward);
-                GiveReward(reward, -reward);
-            } else {
-            }
-        }
-
-        private void GiveReward(float friend_reward, float enemy_reward) {
-            foreach (GameObject friend in friends) {
-                friend.GetComponent<CarRLAgent>().AddReward(friend_reward);
-            }
-            foreach (GameObject enemy in enemies) {
-                enemy.GetComponent<CarRLAgent>().AddReward(enemy_reward);
-            }
         }
 
         private void draw_rew_dir(float pow) {
