@@ -68,16 +68,16 @@ namespace UnityStandardAssets.Vehicles.Car
 
         if (step >= max_steps - 10) {
             if (blue_score == red_score) {
-                GiveRewardsAndEnd(0f, 0f);
+                GiveFinalRewardsAndEnd(0f, 0f);
             } else if (blue_score > red_score) {
-                GiveRewardsAndEnd(1f, -1f);
+                GiveFinalRewardsAndEnd(1f, -1f);
             } else {
-                GiveRewardsAndEnd(-1f, 1f);
+                GiveFinalRewardsAndEnd(-1f, 1f);
             }
         }
     }
 
-    void GiveRewardsAndEnd(float blue_reward, float red_reward) {
+    void GiveFinalRewardsAndEnd(float blue_reward, float red_reward) {
         foreach (GameObject player in players) {
             CarRLAgent script = player.GetComponent<CarRLAgent>();
             
