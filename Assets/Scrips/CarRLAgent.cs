@@ -86,7 +86,7 @@ namespace UnityStandardAssets.Vehicles.Car
             // Initial rotation woth noise
             this.transform.rotation = initial_rotation;
             var euler = this.transform.eulerAngles;
-            euler.y += Random.Range(-80, 80);
+            euler.y += Random.Range(-30, 30);
             this.transform.eulerAngles = euler;
         }
 
@@ -181,6 +181,13 @@ namespace UnityStandardAssets.Vehicles.Car
         }
         public override void OnActionReceived(float[] vectorAction)
         {
+            // Reward forward speed
+            float forward_speed = transform.InverseTransformDirection(self_rBody.velocity).z;
+
+            if (forward_speed > 0.5) {
+                Debug.Log("forward");
+                AddReward(0.1f / maxStep);
+            }
             //AddReward(-5f / maxStep);
             //if (vectorAction[1] > 0) {
             //    AddReward(1.0f / maxStep);
