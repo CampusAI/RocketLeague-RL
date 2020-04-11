@@ -82,10 +82,10 @@ namespace UnityStandardAssets.Vehicles.Car
             CarRLAgent script = player.GetComponent<CarRLAgent>();
             
             if (script.GetTeam() == "Blue") {
-                script.AddReward(blue_reward);
+                script.SetReward(blue_reward);
                 script.EndEpisode();
             } else if (script.GetTeam() == "Red"){
-                script.AddReward(red_reward);
+                script.SetReward(red_reward);
                 script.EndEpisode();
             } else {
                 throw new System.Exception("UNKNOWN AGENT TAG");

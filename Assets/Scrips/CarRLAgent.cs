@@ -174,12 +174,7 @@ namespace UnityStandardAssets.Vehicles.Car
         }
         public override void OnActionReceived(float[] vectorAction)
         {
-            //AddReward(-5f / maxStep);
-            //if (vectorAction[1] > 0) {
-            //    AddReward(1.0f / maxStep);
-            //}
             car_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1], 0.0f);
-            //draw_rew_dir(7);
         }
 
         public override float[] Heuristic()
