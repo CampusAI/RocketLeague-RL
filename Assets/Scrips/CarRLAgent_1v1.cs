@@ -9,7 +9,7 @@ using System.Threading;
  
 namespace UnityStandardAssets.Vehicles.Car
 {
-    public class CarRLAgent : Agent
+    public class CarRLAgent_1v1 : Agent
     {
         private string team;
         private GameObject own_goal, other_goal, ball;
@@ -21,7 +21,7 @@ namespace UnityStandardAssets.Vehicles.Car
         private CarController car_controller;
         private BehaviorParameters m_BehaviorParameters;
         private Rigidbody self_rBody, ball_rBody;
-        private GoalCheck goalCheck;
+        private GoalCheck_1v1 goalCheck;
 
         // private AgentAgentHelper AgentHelper = new AgentAgentHelper();
 
@@ -38,7 +38,7 @@ namespace UnityStandardAssets.Vehicles.Car
             car_controller = GetComponent<CarController>();
             self_rBody = GetComponent<Rigidbody>();
             ball_rBody = ball.GetComponent<Rigidbody>();
-            goalCheck = ball.GetComponent<GoalCheck>();
+            goalCheck = ball.GetComponent<GoalCheck_1v1>();
             GameObject car_sphere = this.transform.Find("Sphere").gameObject;
             if (team == "Blue")
             {
@@ -75,7 +75,7 @@ namespace UnityStandardAssets.Vehicles.Car
         {
             goalCheck.ResetGame();
             Vector3 new_pos = new Vector3(initial_position.x, initial_position.y, initial_position.z);
-            float noise = AgentHelper.NextGaussian(0, 15);
+            float noise = AgentHelper.NextGaussian(0, 10);
             // Debug.Log(noise);
             new_pos.x += noise;
             noise = AgentHelper.NextGaussian(0, 7);
@@ -86,7 +86,7 @@ namespace UnityStandardAssets.Vehicles.Car
             // Initial rotation woth noise
             this.transform.rotation = initial_rotation;
             var euler = this.transform.eulerAngles;
-            euler.y += Random.Range(-30, 30);
+            euler.y += Random.Range(-60, 60);
             this.transform.eulerAngles = euler;
         }
 
@@ -107,41 +107,21 @@ namespace UnityStandardAssets.Vehicles.Car
             sensor.AddObservation(velocity_relative.x / 50f);  // Drift speed
             sensor.AddObservation(velocity_relative.z / 50f);
 
-            Vector3 own_goal_relative_pos =
-                transform.InverseTransformDirection(own_goal.transform.position - transform.position);
-            sensor.AddObservation(own_goal_relative_pos.x / 200.0f);
-            sensor.AddObservation(own_goal_relative_pos.z / 200.0f);
-
             Vector3 other_goal_relative_pos =
                 transform.InverseTransformDirection(other_goal.transform.position - transform.position);
             sensor.AddObservation(other_goal_relative_pos.x / 200.0f);
             sensor.AddObservation(other_goal_relative_pos.z / 200.0f);
 
-            foreach (GameObject enemy in enemies) {
-                Vector3 enemy_rel_pos =
-                    transform.InverseTransformDirection(enemy.transform.position - transform.position);
-                sensor.AddObservation(enemy_rel_pos.x / 200f);
-                sensor.AddObservation(enemy_rel_pos.z / 200f);
+            Vector3 enemy_rel_pos =
+                transform.InverseTransformDirection(enemies[0].transform.position - transform.position);
+            sensor.AddObservation(enemy_rel_pos.x / 200f);
+            sensor.AddObservation(enemy_rel_pos.z / 200f);
 
-                Vector3 enemy_rel_vel =
-                    transform.InverseTransformDirection(enemy.GetComponent<Rigidbody>().velocity);
-                sensor.AddObservation(enemy_rel_vel.x / 50f);
-                sensor.AddObservation(enemy_rel_vel.z / 50f);
-            }
+            Vector3 enemy_rel_vel =
+                transform.InverseTransformDirection(enemies[0].GetComponent<Rigidbody>().velocity);
+            sensor.AddObservation(enemy_rel_vel.x / 50f);
+            sensor.AddObservation(enemy_rel_vel.z / 50f);
 
-            foreach (GameObject friend in friends) {
-                Vector3 friend_rel_pos =
-                    transform.InverseTransformDirection(friend.transform.position - transform.position);
-                sensor.AddObservation(friend_rel_pos.x / 200f);
-                sensor.AddObservation(friend_rel_pos.z / 200f);
-
-                Vector3 friend_rel_vel =
-                    transform.InverseTransformDirection(friend.GetComponent<Rigidbody>().velocity);
-                sensor.AddObservation(friend_rel_vel.x / 50f);
-                sensor.AddObservation(friend_rel_vel.z / 50f);
-            }
-
-            // Always my score first, enemy score second
             if (this.team == "Blue") {
                 sensor.AddObservation(goalCheck.blue_score);
                 sensor.AddObservation(goalCheck.red_score);
@@ -149,36 +129,16 @@ namespace UnityStandardAssets.Vehicles.Car
                 sensor.AddObservation(goalCheck.red_score);
                 sensor.AddObservation(goalCheck.blue_score);
             }
-
-            // In case we wanna add something but not retrain whole model
-            sensor.AddObservation(0.0f);
-            sensor.AddObservation(0.0f);
-            sensor.AddObservation(0.0f);
-            sensor.AddObservation(0.0f);
         }
 
         public void goal(string scoring_team) {
             if (scoring_team == team) {
-                AddReward(1.0f);
+                AddReward(0.5f);
             } else {
-                AddReward(-1.0f);
+                AddReward(-0.5f);
             }
         }
 
-        private void draw_rew_dir(float pow) {
-            Vector3 ball_to_goal = (other_goal.transform.position - ball.transform.position).normalized * 50;
-            Debug.DrawLine(ball.transform.position, ball.transform.position + ball_to_goal, Color.green, 0.1f);
-            for (int i = 0; i < 360; i++) {
-                Vector3 dir = Quaternion.Euler(0, i, 0) * ball_to_goal;
-                float cosine = Vector3.Dot(ball_to_goal, dir) / (ball_to_goal.magnitude * dir.magnitude);
-                dir *= Mathf.Abs(Mathf.Pow(cosine, pow));
-                if (cosine > 0){
-                    Debug.DrawLine(ball.transform.position, ball.transform.position + dir, Color.green, 0.1f);
-                } else {
-                    Debug.DrawLine(ball.transform.position, ball.transform.position + dir, Color.red, 0.1f);
-                }
-            }
-        }
         public override void OnActionReceived(float[] vectorAction)
         {
             // Reward forward speed
