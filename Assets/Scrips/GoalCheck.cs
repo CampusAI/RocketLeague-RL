@@ -96,77 +96,33 @@ namespace UnityStandardAssets.Vehicles.Car
 
         }
 
-        // public void RewardField()
-        // {
-        //     float ball_in_blue_field = 0.0f;
-        //     float epsilon = 5.0f;
-        //     if (this.transform.position.x - ball_spawn_point.transform.position.x < -epsilon)
-        //         ball_in_blue_field = 1.0f;
-        //     else if (this.transform.position.x - ball_spawn_point.transform.position.x > epsilon)
-        //         ball_in_blue_field = -1.0f;
-
-        //     float reward = 0.1f / players[0].GetComponent<CarRLAgent>().maxStep;
-        //     if (ball_in_blue_field != 0.0f)
-        //         foreach (GameObject player in players)
-        //         {
-        //             CarRLAgent script = player.GetComponent<CarRLAgent>();
-
-        //             if (script.GetTeam() == "Blue")
-        //             {
-        //                 script.AddReward(-ball_in_blue_field * reward);
-        //             }
-        //             else if (script.GetTeam() == "Red")
-        //             {
-        //                 script.AddReward(ball_in_blue_field * reward);
-        //             }
-        //             else
-        //             {
-        //                 throw new System.Exception("UNKNOWN AGENT TAG");
-        //             }
-        //         }
-        // }
-
         public void CheckWin()
         {
             int step = players[0].GetComponent<CarRLAgent>().StepCount;
             int max_steps = players[0].GetComponent<CarRLAgent>().maxStep;
-            if (step >= max_steps - 10)
-            {
-                if (blue_score == red_score)
-                {
+            if (step >= max_steps - 10) { // To be sure episode terminates here
+                if (blue_score == red_score) {
                     GiveFinalRewardsAndEnd(0f, 0f);
-                }
-                else if (blue_score > red_score)
-                {
+                } else if (blue_score > red_score) {
                     GiveFinalRewardsAndEnd(1f, -1f);
-                }
-                else
-                {
+                } else {
                     GiveFinalRewardsAndEnd(-1f, 1f);
                 }
             }
         }
 
-        void GiveFinalRewardsAndEnd(float blue_reward, float red_reward)
-        {
-            foreach (GameObject player in players)
-            {
-                CarRLAgent script = player.GetComponent<CarRLAgent>();
-
-                if (script.GetTeam() == "Blue")
-                {
-                    script.AddReward(blue_reward);
-                    script.EndEpisode();
-                }
-                else if (script.GetTeam() == "Red")
-                {
-                    script.AddReward(red_reward);
-                    script.EndEpisode();
-                }
-                else
-                {
-                    throw new System.Exception("UNKNOWN AGENT TAG");
-                }
+    void GiveFinalRewardsAndEnd(float blue_reward, float red_reward) {
+        foreach (GameObject player in players) {
+            CarRLAgent script = player.GetComponent<CarRLAgent>();
+            
+            if (script.GetTeam() == "Blue") {
+                script.SetReward(blue_reward);
+                script.EndEpisode();
+            } else if (script.GetTeam() == "Red"){
+                script.SetReward(red_reward);
+                script.EndEpisode();
+            } else {
+                throw new System.Exception("UNKNOWN AGENT TAG");
             }
         }
     }

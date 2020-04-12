@@ -103,6 +103,10 @@ namespace UnityStandardAssets.Vehicles.Car
             sensor.AddObservation(ball_relative_vel.y / 50.0f);
             sensor.AddObservation(ball_relative_vel.z / 50.0f);
 
+            // sensor.AddObservation(ball_rBody.angularVelocity.x);
+            // sensor.AddObservation(ball_rBody.angularVelocity.y);
+            // sensor.AddObservation(ball_rBody.angularVelocity.z);
+
             Vector3 velocity_relative = transform.InverseTransformDirection(self_rBody.velocity);
             sensor.AddObservation(velocity_relative.x / 50f);  // Drift speed
             sensor.AddObservation(velocity_relative.z / 50f);
@@ -142,19 +146,19 @@ namespace UnityStandardAssets.Vehicles.Car
             }
 
             // Always my score first, enemy score second
-            if (this.team == "Blue") {
-                sensor.AddObservation(goalCheck.blue_score);
-                sensor.AddObservation(goalCheck.red_score);
-            } else {
-                sensor.AddObservation(goalCheck.red_score);
-                sensor.AddObservation(goalCheck.blue_score);
-            }
+            // if (this.team == "Blue") {
+            //     sensor.AddObservation(goalCheck.blue_score);
+            //     sensor.AddObservation(goalCheck.red_score);
+            // } else {
+            //     sensor.AddObservation(goalCheck.red_score);
+            //     sensor.AddObservation(goalCheck.blue_score);
+            // }
 
-            // In case we wanna add something but not retrain whole model
-            sensor.AddObservation(0.0f);
-            sensor.AddObservation(0.0f);
-            sensor.AddObservation(0.0f);
-            sensor.AddObservation(0.0f);
+            // // In case we wanna add something but not retrain whole model
+            // sensor.AddObservation(0.0f);
+            // sensor.AddObservation(0.0f);
+            // sensor.AddObservation(0.0f);
+            // sensor.AddObservation(0.0f);
         }
 
         public void goal(string scoring_team) {
@@ -165,34 +169,15 @@ namespace UnityStandardAssets.Vehicles.Car
             }
         }
 
-        private void draw_rew_dir(float pow) {
-            Vector3 ball_to_goal = (other_goal.transform.position - ball.transform.position).normalized * 50;
-            Debug.DrawLine(ball.transform.position, ball.transform.position + ball_to_goal, Color.green, 0.1f);
-            for (int i = 0; i < 360; i++) {
-                Vector3 dir = Quaternion.Euler(0, i, 0) * ball_to_goal;
-                float cosine = Vector3.Dot(ball_to_goal, dir) / (ball_to_goal.magnitude * dir.magnitude);
-                dir *= Mathf.Abs(Mathf.Pow(cosine, pow));
-                if (cosine > 0){
-                    Debug.DrawLine(ball.transform.position, ball.transform.position + dir, Color.green, 0.1f);
-                } else {
-                    Debug.DrawLine(ball.transform.position, ball.transform.position + dir, Color.red, 0.1f);
-                }
-            }
+        public void TouchedBall() {
+
         }
         public override void OnActionReceived(float[] vectorAction)
         {
-            // Reward forward speed
-            // float forward_speed = transform.InverseTransformDirection(self_rBody.velocity).z;
-            // if (forward_speed > 0.5) {
-            //     Debug.Log("forward");
-            //     AddReward(0.1f / maxStep);
-            // }
-            //AddReward(-5f / maxStep);
-            //if (vectorAction[1] > 0) {
-            //    AddReward(1.0f / maxStep);
-            //}
+            if (ball.transform.position.y < 0f) {
+                EndEpisode();
+            }
             car_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1], 0.0f);
-            //draw_rew_dir(7);
         }
 
         public override float[] Heuristic()
