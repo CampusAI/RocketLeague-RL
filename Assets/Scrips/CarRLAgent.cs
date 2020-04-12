@@ -98,6 +98,10 @@ namespace UnityStandardAssets.Vehicles.Car
             sensor.AddObservation(ball_relative_vel.y / 50.0f);
             sensor.AddObservation(ball_relative_vel.z / 50.0f);
 
+            sensor.AddObservation(ball_rBody.angularVelocity.x);
+            sensor.AddObservation(ball_rBody.angularVelocity.y);
+            sensor.AddObservation(ball_rBody.angularVelocity.z);
+
             Vector3 velocity_relative = transform.InverseTransformDirection(self_rBody.velocity);
             sensor.AddObservation(velocity_relative.x / 50f);  // Drift speed
             sensor.AddObservation(velocity_relative.z / 50f);
@@ -135,15 +139,6 @@ namespace UnityStandardAssets.Vehicles.Car
                 sensor.AddObservation(friend_rel_vel.x / 50f);
                 sensor.AddObservation(friend_rel_vel.z / 50f);
             }
-
-            // Always my score first, enemy score second
-            if (this.team == "Blue") {
-                sensor.AddObservation(goalCheck.blue_score);
-                sensor.AddObservation(goalCheck.red_score);
-            } else {
-                sensor.AddObservation(goalCheck.red_score);
-                sensor.AddObservation(goalCheck.blue_score);
-            }
         }
 
         public void goal(string scoring_team) {
@@ -174,6 +169,9 @@ namespace UnityStandardAssets.Vehicles.Car
         }
         public override void OnActionReceived(float[] vectorAction)
         {
+            if (ball.transform.position.y < 0f) {
+                EndEpisode();
+            }
             car_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1], 0.0f);
         }
 
