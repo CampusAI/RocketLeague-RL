@@ -20,6 +20,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         private CarController car_controller;
         private BehaviorParameters m_BehaviorParameters;
+        // private DecisionRequester m_DecisionRequester;
         private Rigidbody self_rBody, ball_rBody;
         private GoalCheck goalCheck;
 
@@ -27,6 +28,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public override void Initialize()
         {
+            Time.timeScale = 20;
             // Debug.Log(Thread.CurrentThread.ManagedThreadId);
             //Random.seed = Thread.CurrentThread.ManagedThreadId;
             team = this.gameObject.tag;
