@@ -148,19 +148,19 @@ namespace UnityStandardAssets.Vehicles.Car
             }
 
             // Always my score first, enemy score second
-            // if (this.team == "Blue") {
-            //     sensor.AddObservation(goalCheck.blue_score);
-            //     sensor.AddObservation(goalCheck.red_score);
-            // } else {
-            //     sensor.AddObservation(goalCheck.red_score);
-            //     sensor.AddObservation(goalCheck.blue_score);
-            // }
+            if (this.team == "Blue") {
+                sensor.AddObservation(goalCheck.blue_score);
+                sensor.AddObservation(goalCheck.red_score);
+            } else {
+                sensor.AddObservation(goalCheck.red_score);
+                sensor.AddObservation(goalCheck.blue_score);
+            }
 
-            // // In case we wanna add something but not retrain whole model
-            // sensor.AddObservation(0.0f);
-            // sensor.AddObservation(0.0f);
-            // sensor.AddObservation(0.0f);
-            // sensor.AddObservation(0.0f);
+            // In case we wanna add something but not retrain whole model
+            sensor.AddObservation(0.0f);
+            sensor.AddObservation(0.0f);
+            sensor.AddObservation(0.0f);
+            sensor.AddObservation(0.0f);
         }
 
         public void goal(string scoring_team) {
