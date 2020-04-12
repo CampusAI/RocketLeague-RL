@@ -66,7 +66,7 @@ namespace UnityStandardAssets.Vehicles.Car
         int step = players[0].GetComponent<CarRLAgent>().StepCount;
         int max_steps = players[0].GetComponent<CarRLAgent>().maxStep;
 
-        if (step >= max_steps - 10) {
+        if (step >= max_steps - 10) { // To be sure episode terminates here
             if (blue_score == red_score) {
                 GiveFinalRewardsAndEnd(0f, 0f);
             } else if (blue_score > red_score) {

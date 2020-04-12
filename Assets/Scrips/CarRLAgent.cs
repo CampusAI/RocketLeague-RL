@@ -152,21 +152,6 @@ namespace UnityStandardAssets.Vehicles.Car
         public void TouchedBall() {
 
         }
-
-        private void draw_rew_dir(float pow) {
-            Vector3 ball_to_goal = (other_goal.transform.position - ball.transform.position).normalized * 50;
-            Debug.DrawLine(ball.transform.position, ball.transform.position + ball_to_goal, Color.green, 0.1f);
-            for (int i = 0; i < 360; i++) {
-                Vector3 dir = Quaternion.Euler(0, i, 0) * ball_to_goal;
-                float cosine = Vector3.Dot(ball_to_goal, dir) / (ball_to_goal.magnitude * dir.magnitude);
-                dir *= Mathf.Abs(Mathf.Pow(cosine, pow));
-                if (cosine > 0){
-                    Debug.DrawLine(ball.transform.position, ball.transform.position + dir, Color.green, 0.1f);
-                } else {
-                    Debug.DrawLine(ball.transform.position, ball.transform.position + dir, Color.red, 0.1f);
-                }
-            }
-        }
         public override void OnActionReceived(float[] vectorAction)
         {
             if (ball.transform.position.y < 0f) {
