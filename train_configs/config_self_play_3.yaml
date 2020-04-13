@@ -6,11 +6,11 @@ default:
     num_epoch: 3
     time_horizon: 512
     beta: 1.0e-4
-    epsilon: 0.15
+    epsilon: 0.2
     hidden_units: 500
-    learning_rate: 1.0e-4
+    learning_rate: 1.5e-4
     learning_rate_schedule: constant
-    max_steps: 2.0e8
+    max_steps: 5.0e8
     normalize: true
     num_layers: 3
     sequence_length: 64
