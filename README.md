@@ -29,7 +29,7 @@ Add those three lines:
 
 4. Create new virtual environment:
 
-`mkvirtualenv rl`
+`mkvirtualenv --python=python3 rl`
 
 5. Activate it:
 
