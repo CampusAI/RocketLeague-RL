@@ -72,7 +72,7 @@ namespace UnityStandardAssets.Vehicles.Car
             float x_vel = this.gameObject.GetComponent<Rigidbody>().velocity.x;
             if (x_vel > epsilon)
                 ball_towards_red = 1;
-            else if (x_vel < - epsilon)
+            else if (x_vel < -epsilon)
                 ball_towards_red = -1;
 
             float reward = 0.2f / players[0].GetComponent<CarRLAgent>().maxStep;
@@ -100,29 +100,43 @@ namespace UnityStandardAssets.Vehicles.Car
         {
             int step = players[0].GetComponent<CarRLAgent>().StepCount;
             int max_steps = players[0].GetComponent<CarRLAgent>().maxStep;
-            if (step >= max_steps - 10) { // To be sure episode terminates here
-                if (blue_score == red_score) {
+            if (step >= max_steps - 10)
+            { // To be sure episode terminates here
+                if (blue_score == red_score)
+                {
                     GiveFinalRewardsAndEnd(0f, 0f);
-                } else if (blue_score > red_score) {
+                }
+                else if (blue_score > red_score)
+                {
                     GiveFinalRewardsAndEnd(1f, -1f);
-                } else {
+                }
+                else
+                {
                     GiveFinalRewardsAndEnd(-1f, 1f);
                 }
             }
         }
 
-    void GiveFinalRewardsAndEnd(float blue_reward, float red_reward) {
-        foreach (GameObject player in players) {
-            CarRLAgent script = player.GetComponent<CarRLAgent>();
-            
-            if (script.GetTeam() == "Blue") {
-                script.SetReward(blue_reward);
-                script.EndEpisode();
-            } else if (script.GetTeam() == "Red"){
-                script.SetReward(red_reward);
-                script.EndEpisode();
-            } else {
-                throw new System.Exception("UNKNOWN AGENT TAG");
+        void GiveFinalRewardsAndEnd(float blue_reward, float red_reward)
+        {
+            foreach (GameObject player in players)
+            {
+                CarRLAgent script = player.GetComponent<CarRLAgent>();
+
+                if (script.GetTeam() == "Blue")
+                {
+                    script.SetReward(blue_reward);
+                    script.EndEpisode();
+                }
+                else if (script.GetTeam() == "Red")
+                {
+                    script.SetReward(red_reward);
+                    script.EndEpisode();
+                }
+                else
+                {
+                    throw new System.Exception("UNKNOWN AGENT TAG");
+                }
             }
         }
     }

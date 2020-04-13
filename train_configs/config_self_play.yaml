@@ -10,7 +10,7 @@ default:
     hidden_units: 500
     learning_rate: 2.0e-4
     learning_rate_schedule: constant
-    max_steps: 2.0e8
+    max_steps: 3.0e8
     normalize: true
     num_layers: 3
     sequence_length: 64

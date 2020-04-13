@@ -27,6 +27,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public override void Initialize()
         {
+            Time.timeScale = 3;
             // Debug.Log(Thread.CurrentThread.ManagedThreadId);
             //Random.seed = Thread.CurrentThread.ManagedThreadId;
             team = this.gameObject.tag;
@@ -75,10 +76,10 @@ namespace UnityStandardAssets.Vehicles.Car
         {
             goalCheck.ResetGame();
             Vector3 new_pos = new Vector3(initial_position.x, initial_position.y, initial_position.z);
-            float noise = AgentHelper.NextGaussian(0, 10);
+            float noise = AgentHelper.NextGaussian(0, 5);
             // Debug.Log(noise);
             new_pos.x += noise;
-            noise = AgentHelper.NextGaussian(0, 7);
+            noise = AgentHelper.NextGaussian(0, 3);
             new_pos.z += noise;
             this.transform.position = new_pos; 
             this.self_rBody.velocity = Vector3.zero;
@@ -86,7 +87,7 @@ namespace UnityStandardAssets.Vehicles.Car
             // Initial rotation woth noise
             this.transform.rotation = initial_rotation;
             var euler = this.transform.eulerAngles;
-            euler.y += Random.Range(-60, 60);
+            euler.y += Random.Range(-20, 20);
             this.transform.eulerAngles = euler;
         }
 
