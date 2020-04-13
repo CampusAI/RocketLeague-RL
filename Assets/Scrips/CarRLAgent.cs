@@ -28,7 +28,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public override void Initialize()
         {
-            Time.timeScale = 20;
+            Time.timeScale = 1;
             // Debug.Log(Thread.CurrentThread.ManagedThreadId);
             //Random.seed = Thread.CurrentThread.ManagedThreadId;
             team = this.gameObject.tag;
