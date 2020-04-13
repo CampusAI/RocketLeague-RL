@@ -7,7 +7,7 @@ default:
     time_horizon: 1000
     beta: 1.0e-4
     epsilon: 0.2
-    hidden_units: 500
+    hidden_units: 400
     learning_rate: 2.0e-4
     learning_rate_schedule: constant
     max_steps: 3.0e8

@@ -38,6 +38,7 @@ namespace UnityStandardAssets.Vehicles.Car
         {
             transform.position = ball_spawn_point.transform.position;
             GetComponent<Rigidbody>().velocity = Vector3.zero;
+            GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         }
         private void OnCollisionEnter(Collision collision)
         {
@@ -55,6 +56,12 @@ namespace UnityStandardAssets.Vehicles.Car
                 foreach (GameObject player in players)
                     player.gameObject.GetComponent<CarRLAgent>().goal("Blue");
                 ResetBall();
+            }
+            // If collided with a car
+            if (collision.gameObject.tag == "Blue" || collision.gameObject.tag == "Red")
+            {
+                foreach (GameObject player in players)
+                    player.gameObject.GetComponent<CarRLAgent>().TouchedBall(collision.gameObject.tag);
             }
         }
 
@@ -82,11 +89,11 @@ namespace UnityStandardAssets.Vehicles.Car
                     CarRLAgent script = player.GetComponent<CarRLAgent>();
                     if (script.GetTeam() == "Blue")
                     {
-                        script.AddReward(ball_towards_red * reward);
+                        script.add_reward(ball_towards_red * reward);
                     }
                     else if (script.GetTeam() == "Red")
                     {
-                        script.AddReward(-ball_towards_red * reward);
+                        script.add_reward(-ball_towards_red * reward);
                     }
                     else
                     {

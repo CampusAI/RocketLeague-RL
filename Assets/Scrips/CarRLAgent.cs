@@ -6,7 +6,7 @@ using MLAgents.Sensors;
 using MLAgents.Policies;
 // using System;
 using System.Threading;
- 
+
 namespace UnityStandardAssets.Vehicles.Car
 {
     public class CarRLAgent : Agent
@@ -24,11 +24,11 @@ namespace UnityStandardAssets.Vehicles.Car
         private Rigidbody self_rBody, ball_rBody;
         private GoalCheck goalCheck;
 
-        // private AgentAgentHelper AgentHelper = new AgentAgentHelper();
+        // private float episode_reward = 0; // To debug rewards
 
         public override void Initialize()
         {
-            Time.timeScale = 1;
+            // Time.timeScale = 5;
             // Debug.Log(Thread.CurrentThread.ManagedThreadId);
             //Random.seed = Thread.CurrentThread.ManagedThreadId;
             team = this.gameObject.tag;
@@ -73,6 +73,8 @@ namespace UnityStandardAssets.Vehicles.Car
             }
         }
 
+        public string GetTeam() { return team; }
+
         public override void OnEpisodeBegin()
         {
             goalCheck.ResetGame();
@@ -82,7 +84,7 @@ namespace UnityStandardAssets.Vehicles.Car
             new_pos.x += noise;
             noise = AgentHelper.NextGaussian(0, 7);
             new_pos.z += noise;
-            this.transform.position = new_pos; 
+            this.transform.position = new_pos;
             this.self_rBody.velocity = Vector3.zero;
 
             // Initial rotation woth noise
@@ -92,11 +94,35 @@ namespace UnityStandardAssets.Vehicles.Car
             this.transform.eulerAngles = euler;
         }
 
-        public override void CollectObservations(VectorSensor sensor) {
+
+        // CONTROL ######################################################
+        public override float[] Heuristic()
+        {
+            var action = new float[2];
+            float steer = Input.GetAxis("Horizontal");
+            float acc = Input.GetAxis("Vertical");
+            action[1] = acc;
+            action[0] = steer;
+            return action;
+        }
+
+        public override void OnActionReceived(float[] vectorAction)
+        {
+            if (ball.transform.position.y < 0f)
+            {
+                EndEpisode();
+            }
+            car_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1], 0.0f);
+        }
+
+
+        // OBESRVATIONS #################################################
+        public override void CollectObservations(VectorSensor sensor)
+        {
             Vector3 ball_relative_pos =
                 transform.InverseTransformDirection(ball.transform.position - transform.position);
             sensor.AddObservation(ball_relative_pos.x / 200.0f);
-            sensor.AddObservation(ball_relative_pos.y / 200.0f);
+            sensor.AddObservation((ball_relative_pos.y-2.1f) / 200.0f); // Make it zero if at same height
             sensor.AddObservation(ball_relative_pos.z / 200.0f);
 
             Vector3 ball_relative_vel =
@@ -104,10 +130,6 @@ namespace UnityStandardAssets.Vehicles.Car
             sensor.AddObservation(ball_relative_vel.x / 50.0f);
             sensor.AddObservation(ball_relative_vel.y / 50.0f);
             sensor.AddObservation(ball_relative_vel.z / 50.0f);
-
-            // sensor.AddObservation(ball_rBody.angularVelocity.x);
-            // sensor.AddObservation(ball_rBody.angularVelocity.y);
-            // sensor.AddObservation(ball_rBody.angularVelocity.z);
 
             Vector3 velocity_relative = transform.InverseTransformDirection(self_rBody.velocity);
             sensor.AddObservation(velocity_relative.x / 50f);  // Drift speed
@@ -123,7 +145,8 @@ namespace UnityStandardAssets.Vehicles.Car
             sensor.AddObservation(other_goal_relative_pos.x / 200.0f);
             sensor.AddObservation(other_goal_relative_pos.z / 200.0f);
 
-            foreach (GameObject enemy in enemies) {
+            foreach (GameObject enemy in enemies)
+            {
                 Vector3 enemy_rel_pos =
                     transform.InverseTransformDirection(enemy.transform.position - transform.position);
                 sensor.AddObservation(enemy_rel_pos.x / 200f);
@@ -135,7 +158,8 @@ namespace UnityStandardAssets.Vehicles.Car
                 sensor.AddObservation(enemy_rel_vel.z / 50f);
             }
 
-            foreach (GameObject friend in friends) {
+            foreach (GameObject friend in friends)
+            {
                 Vector3 friend_rel_pos =
                     transform.InverseTransformDirection(friend.transform.position - transform.position);
                 sensor.AddObservation(friend_rel_pos.x / 200f);
@@ -147,14 +171,34 @@ namespace UnityStandardAssets.Vehicles.Car
                 sensor.AddObservation(friend_rel_vel.z / 50f);
             }
 
-            // Always my score first, enemy score second
-            if (this.team == "Blue") {
-                sensor.AddObservation(goalCheck.blue_score);
-                sensor.AddObservation(goalCheck.red_score);
-            } else {
-                sensor.AddObservation(goalCheck.red_score);
-                sensor.AddObservation(goalCheck.blue_score);
-            }
+            // Raycasts
+            Vector3 ray_pos = transform.position;
+            ray_pos.y += 10.0f; // So that it ignores cars and ball
+            RaycastHit front_hit, back_hit;
+            float lidar_range = 100.0f;
+            // Front ray
+            Vector3 front_ray_dir = transform.TransformDirection(new Vector3(0.0f, 0.0f, 1.0f));
+            Ray front_ray = new Ray(ray_pos, front_ray_dir);
+            Physics.Raycast(front_ray, out front_hit);
+            float front_distance = (Mathf.Clamp(front_hit.distance - 2f, 0, lidar_range)) / lidar_range;
+            sensor.AddObservation(front_distance);
+            // Back ray
+            Vector3 back_ray_dir = transform.TransformDirection(new Vector3(0.0f, 0.0f, -1.0f));
+            Ray back_ray = new Ray(ray_pos, back_ray_dir);
+            Physics.Raycast(back_ray, out back_hit);
+            float back_distance = (Mathf.Clamp(back_hit.distance - 2f, 0, lidar_range)) / lidar_range;
+            sensor.AddObservation(back_distance);
+
+            // Debug raycasts
+            // Debug.DrawLine(ray_pos, ray_pos + (Mathf.Clamp(front_hit.distance - 2f, 0, lidar_range))*front_ray_dir.normalized, Color.red, 0.1f);
+            // Debug.DrawLine(ray_pos, ray_pos + (Mathf.Clamp(back_hit.distance - 2f, 0, lidar_range))*back_ray_dir.normalized, Color.red, 0.1f);
+            // if (this.gameObject.name == "CarSoccerRL_Blue")
+            // {
+                // Debug.Log("Ball: ");
+                // Debug.Log(ball_relative_pos);
+                // Debug.Log("Front: " + front_distance);
+                // Debug.Log("Back: " + back_distance);
+            // }
 
             // In case we wanna add something but not retrain whole model
             sensor.AddObservation(0.0f);
@@ -163,45 +207,60 @@ namespace UnityStandardAssets.Vehicles.Car
             sensor.AddObservation(0.0f);
         }
 
-        public void goal(string scoring_team) {
-            if (scoring_team == team) {
-                AddReward(1.0f);
-            } else {
-                AddReward(-1.0f);
+
+        // REWARDS ###################################################### 
+        public void goal(string scoring_team)
+        {
+            if (scoring_team == team)
+            {
+                add_reward(1.0f);
+            }
+            else
+            {
+                add_reward(-1.0f);
             }
         }
 
-        public void TouchedBall() {
-
-        }
-        public override void OnActionReceived(float[] vectorAction)
+        public void TouchedBall(string touching_team)
         {
-            if (ball.transform.position.y < 0f) {
-                EndEpisode();
+            float reward = 0.05f / maxStep;
+            if (touching_team == team)
+            {
+                add_reward(reward);
             }
-            car_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1], 0.0f);
+            else
+            {
+                add_reward(-reward);
+            }
         }
 
-        public override float[] Heuristic()
+        private void OnCollisionStay(Collision collision)
         {
-            var action = new float[2];
-            float steer = Input.GetAxis("Horizontal");
-            float acc = Input.GetAxis("Vertical");
-            action[1] = acc;
-            action[0] = steer;
-            return action;
+            float reward = - 0.05f / maxStep;
+            if (collision.gameObject.tag != "Ball")
+            {
+                add_reward(reward);
+            }
         }
 
-        private void FixedUpdate()
+        private void OnCollisionEnter(Collision collision)
         {
-            //Debug.DrawLine(transform.position, ball.transform.position, Color.black);
-            //Debug.DrawLine(transform.position, own_goal.transform.position, Color.green);
-            //Debug.DrawLine(transform.position, other_goal.transform.position, Color.yellow);
-            // Debug.DrawLine(transform.position, enemies[0].transform.position, Color.magenta);
-            // car_controller.Move(0f, 1f, 1f, 0f);
+            float reward = - 0.05f / maxStep;
+            if (collision.gameObject.tag != "Ball")
+            {
+                add_reward(reward);
+            }
         }
 
-        public string GetTeam() {return team;}
-
+        public void add_reward(float reward)
+        { // This is to debug episode reward
+            // if (this.gameObject.name == "CarSoccerRL_Blue")
+            // {
+            //     episode_reward += reward;
+            //     Debug.Log("Adding: " + reward.ToString());
+            //     Debug.Log("Summing:" + episode_reward.ToString());
+            // }
+            AddReward(reward);
+        }
     }
 }
