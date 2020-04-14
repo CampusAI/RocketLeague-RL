@@ -8,7 +8,7 @@ using MLAgents.Policies;
 
 namespace UnityStandardAssets.Vehicles.Car
 {
-    public class GoalCheck : MonoBehaviour
+    public class GoalCheck_1v1 : MonoBehaviour
     {
         public GameObject ball_spawn_point;
         public int blue_score = 0;
@@ -46,14 +46,14 @@ namespace UnityStandardAssets.Vehicles.Car
             {
                 red_score = red_score + 1;
                 foreach (GameObject player in players)
-                    player.gameObject.GetComponent<CarRLAgent>().goal("Red");
+                    player.gameObject.GetComponent<CarRLAgent_1v1>().goal("Red");
                 ResetBall();
             }
             if (collision.gameObject.name == "Red_goal")
             {
                 blue_score = blue_score + 1;
                 foreach (GameObject player in players)
-                    player.gameObject.GetComponent<CarRLAgent>().goal("Blue");
+                    player.gameObject.GetComponent<CarRLAgent_1v1>().goal("Blue");
                 ResetBall();
             }
         }
@@ -72,14 +72,14 @@ namespace UnityStandardAssets.Vehicles.Car
             float x_vel = this.gameObject.GetComponent<Rigidbody>().velocity.x;
             if (x_vel > epsilon)
                 ball_towards_red = 1;
-            else if (x_vel < -epsilon)
+            else if (x_vel < - epsilon)
                 ball_towards_red = -1;
 
-            float reward = 0.2f / players[0].GetComponent<CarRLAgent>().maxStep;
+            float reward = 0.2f / players[0].GetComponent<CarRLAgent_1v1>().maxStep;
             if (ball_towards_red != 0.0f)
                 foreach (GameObject player in players)
                 {
-                    CarRLAgent script = player.GetComponent<CarRLAgent>();
+                    CarRLAgent_1v1 script = player.GetComponent<CarRLAgent_1v1>();
                     if (script.GetTeam() == "Blue")
                     {
                         script.AddReward(ball_towards_red * reward);
@@ -96,12 +96,42 @@ namespace UnityStandardAssets.Vehicles.Car
 
         }
 
+        // public void RewardField()
+        // {
+        //     float ball_in_blue_field = 0.0f;
+        //     float epsilon = 5.0f;
+        //     if (this.transform.position.x - ball_spawn_point.transform.position.x < -epsilon)
+        //         ball_in_blue_field = 1.0f;
+        //     else if (this.transform.position.x - ball_spawn_point.transform.position.x > epsilon)
+        //         ball_in_blue_field = -1.0f;
+
+        //     float reward = 0.1f / players[0].GetComponent<CarRLAgent_1v1>().maxStep;
+        //     if (ball_in_blue_field != 0.0f)
+        //         foreach (GameObject player in players)
+        //         {
+        //             CarRLAgent_1v1 script = player.GetComponent<CarRLAgent_1v1>();
+
+        //             if (script.GetTeam() == "Blue")
+        //             {
+        //                 script.AddReward(-ball_in_blue_field * reward);
+        //             }
+        //             else if (script.GetTeam() == "Red")
+        //             {
+        //                 script.AddReward(ball_in_blue_field * reward);
+        //             }
+        //             else
+        //             {
+        //                 throw new System.Exception("UNKNOWN AGENT TAG");
+        //             }
+        //         }
+        // }
+
         public void CheckWin()
         {
-            int step = players[0].GetComponent<CarRLAgent>().StepCount;
-            int max_steps = players[0].GetComponent<CarRLAgent>().maxStep;
+            int step = players[0].GetComponent<CarRLAgent_1v1>().StepCount;
+            int max_steps = players[0].GetComponent<CarRLAgent_1v1>().maxStep;
             if (step >= max_steps - 10)
-            { // To be sure episode terminates here
+            {
                 if (blue_score == red_score)
                 {
                     GiveFinalRewardsAndEnd(0f, 0f);
@@ -121,16 +151,16 @@ namespace UnityStandardAssets.Vehicles.Car
         {
             foreach (GameObject player in players)
             {
-                CarRLAgent script = player.GetComponent<CarRLAgent>();
+                CarRLAgent_1v1 script = player.GetComponent<CarRLAgent_1v1>();
 
                 if (script.GetTeam() == "Blue")
                 {
-                    script.SetReward(blue_reward);
+                    script.AddReward(blue_reward);
                     script.EndEpisode();
                 }
                 else if (script.GetTeam() == "Red")
                 {
-                    script.SetReward(red_reward);
+                    script.AddReward(red_reward);
                     script.EndEpisode();
                 }
                 else
