@@ -1,7 +1,7 @@
 default:
     trainer: ppo
-    batch_size: 4500
-    buffer_size: 45000
+    batch_size: 1500
+    buffer_size: 15000
     lambd: 0.92
     num_epoch: 3
     time_horizon: 500
@@ -14,7 +14,7 @@ default:
     normalize: false
     num_layers: 3
     sequence_length: 64
-    summary_freq: 10000
+    summary_freq: 500
     reward_signals:
         extrinsic:
             strength: 1
@@ -28,6 +28,6 @@ default:
     self_play:
         window: 10
         play_against_current_self_ratio: 0.5
-        save_steps: 50000
-        swap_steps: 50000
-        team_change: 100000
+        save_steps: 100000
+        swap_steps: 100000
+        team_change: 200000
