@@ -23,8 +23,8 @@ namespace UnityStandardAssets.Vehicles.Car
             players = new List<GameObject>();
             players.AddRange(AgentHelper.FindGameObjectInChildWithTag(transform.parent, "Blue"));
             players.AddRange(AgentHelper.FindGameObjectInChildWithTag(transform.parent, "Red"));
-            // blue_goal_pos = transform.parent.Find("Blue_goal").gameObject.transform.position;
-            // red_goal_pos = transform.parent.Find("Red_goal").gameObject.transform.position;
+            blue_goal_pos = transform.parent.Find("Blue_goal").gameObject.transform.position;
+            red_goal_pos = transform.parent.Find("Red_goal").gameObject.transform.position;
         }
 
         public void ResetGame()
@@ -74,32 +74,41 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public void RewardBallVelocity()
         {
-            float epsilon = 4.0f;
-            float ball_towards_red = 0.0f;
-            float x_vel = this.gameObject.GetComponent<Rigidbody>().velocity.x;
-            if (x_vel > epsilon)
-                ball_towards_red = 1;
-            else if (x_vel < -epsilon)
-                ball_towards_red = -1;
+            Vector3 vel_dir = this.gameObject.GetComponent<Rigidbody>().velocity;
+            Vector3 ball_to_blue = blue_goal_pos - this.transform.position;
+            Vector3 ball_to_red = red_goal_pos - this.transform.position;
+            vel_dir.y = 0;
+            ball_to_blue.y = 0;
+            ball_to_red.y = 0;
 
-            float reward = 0.2f / players[0].GetComponent<CarRLAgent>().maxStep;
-            if (ball_towards_red != 0.0f)
-                foreach (GameObject player in players)
+            // Debug.DrawLine(this.transform.position, this.transform.position + 10*vel_dir);
+            // Debug.Log(Vector3.Angle(vel_dir, ball_to_blue));
+            // Debug.Log(Mathf.Cos(Vector3.Angle(vel_dir, ball_to_blue)*Mathf.PI/180));
+            // Debug.Log("############");
+
+            float factor = 0.3f/(5.0f*players[0].GetComponent<CarRLAgent>().maxStep);
+            float red_reward = factor*Mathf.Cos(Vector3.Angle(vel_dir, ball_to_blue)*Mathf.PI/180);
+            float blue_reward = factor*Mathf.Cos(Vector3.Angle(vel_dir, ball_to_red)*Mathf.PI/180);
+            
+            if ((Mathf.Abs(red_reward) + Mathf.Abs(blue_reward))/factor < 0.5)
+                return;
+
+            foreach (GameObject player in players)
+            {
+                CarRLAgent script = player.GetComponent<CarRLAgent>();
+                if (script.GetTeam() == "Blue")
                 {
-                    CarRLAgent script = player.GetComponent<CarRLAgent>();
-                    if (script.GetTeam() == "Blue")
-                    {
-                        script.add_reward(ball_towards_red * reward);
-                    }
-                    else if (script.GetTeam() == "Red")
-                    {
-                        script.add_reward(-ball_towards_red * reward);
-                    }
-                    else
-                    {
-                        throw new System.Exception("UNKNOWN AGENT TAG");
-                    }
+                    script.add_reward(blue_reward - red_reward);
                 }
+                else if (script.GetTeam() == "Red")
+                {
+                    script.add_reward(red_reward - blue_reward);
+                }
+                else
+                {
+                    throw new System.Exception("UNKNOWN AGENT TAG");
+                }
+            }
 
         }
 

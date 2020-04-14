@@ -60,61 +60,61 @@ namespace UnityStandardAssets.Vehicles.Car
             // Execute your path here
             // ...
 
-            Vector3 avg_pos = Vector3.zero;
+            // Vector3 avg_pos = Vector3.zero;
 
-            foreach (GameObject friend in friends)
-            {
-                avg_pos += friend.transform.position;
-            }
-            avg_pos = avg_pos / friends.Length;
-            //Vector3 direction = (avg_pos - transform.position).normalized;
-            Vector3 direction = (ball.transform.position - transform.position).normalized;
+            // foreach (GameObject friend in friends)
+            // {
+            //     avg_pos += friend.transform.position;
+            // }
+            // avg_pos = avg_pos / friends.Length;
+            // //Vector3 direction = (avg_pos - transform.position).normalized;
+            // Vector3 direction = (ball.transform.position - transform.position).normalized;
 
-            bool is_to_the_right = Vector3.Dot(direction, transform.right) > 0f;
-            bool is_to_the_front = Vector3.Dot(direction, transform.forward) > 0f;
+            // bool is_to_the_right = Vector3.Dot(direction, transform.right) > 0f;
+            // bool is_to_the_front = Vector3.Dot(direction, transform.forward) > 0f;
 
-            float steering = 0f;
-            float acceleration = 0;
+            // float steering = 0f;
+            // float acceleration = 0;
 
-            if (is_to_the_right && is_to_the_front)
-            {
-                steering = 1f;
-                acceleration = 1f;
-            }
-            else if (is_to_the_right && !is_to_the_front)
-            {
-                steering = -1f;
-                acceleration = -1f;
-            }
-            else if (!is_to_the_right && is_to_the_front)
-            {
-                steering = -1f;
-                acceleration = 1f;
-            }
-            else if (!is_to_the_right && !is_to_the_front)
-            {
-                steering = 1f;
-                acceleration = -1f;
-            }
+            // if (is_to_the_right && is_to_the_front)
+            // {
+            //     steering = 1f;
+            //     acceleration = 1f;
+            // }
+            // else if (is_to_the_right && !is_to_the_front)
+            // {
+            //     steering = -1f;
+            //     acceleration = -1f;
+            // }
+            // else if (!is_to_the_right && is_to_the_front)
+            // {
+            //     steering = -1f;
+            //     acceleration = 1f;
+            // }
+            // else if (!is_to_the_right && !is_to_the_front)
+            // {
+            //     steering = 1f;
+            //     acceleration = -1f;
+            // }
 
-            // this is how you access information about the terrain
-            int i = terrain_manager.myInfo.get_i_index(transform.position.x);
-            int j = terrain_manager.myInfo.get_j_index(transform.position.z);
-            float grid_center_x = terrain_manager.myInfo.get_x_pos(i);
-            float grid_center_z = terrain_manager.myInfo.get_z_pos(j);
+            // // this is how you access information about the terrain
+            // int i = terrain_manager.myInfo.get_i_index(transform.position.x);
+            // int j = terrain_manager.myInfo.get_j_index(transform.position.z);
+            // float grid_center_x = terrain_manager.myInfo.get_x_pos(i);
+            // float grid_center_z = terrain_manager.myInfo.get_z_pos(j);
 
-            Debug.DrawLine(transform.position, ball.transform.position, Color.black);
-            Debug.DrawLine(transform.position, own_goal.transform.position, Color.green);
-            Debug.DrawLine(transform.position, other_goal.transform.position, Color.yellow);
-            Debug.DrawLine(transform.position, friends[0].transform.position, Color.cyan);
-            Debug.DrawLine(transform.position, enemies[0].transform.position, Color.magenta);
+            // Debug.DrawLine(transform.position, ball.transform.position, Color.black);
+            // Debug.DrawLine(transform.position, own_goal.transform.position, Color.green);
+            // Debug.DrawLine(transform.position, other_goal.transform.position, Color.yellow);
+            // Debug.DrawLine(transform.position, friends[0].transform.position, Color.cyan);
+            // Debug.DrawLine(transform.position, enemies[0].transform.position, Color.magenta);
 
 
 
-            // this is how you control the car
-            //Debug.Log("Steering:" + steering + " Acceleration:" + acceleration);
-            // m_Car.Move(steering, acceleration, acceleration, 0f);
-            m_Car.Move(0f, 1f, 1f, 0f);
+            // // this is how you control the car
+            // //Debug.Log("Steering:" + steering + " Acceleration:" + acceleration);
+            // // m_Car.Move(steering, acceleration, acceleration, 0f);
+            // m_Car.Move(0f, 1f, 1f, 0f);
 
 
         }

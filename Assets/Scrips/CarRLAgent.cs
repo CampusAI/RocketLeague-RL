@@ -23,11 +23,13 @@ namespace UnityStandardAssets.Vehicles.Car
         // private DecisionRequester m_DecisionRequester;
         private Rigidbody self_rBody, ball_rBody;
         private GoalCheck goalCheck;
+        private float total_steps;
 
-        // private float episode_reward = 0; // To debug rewards
+        private float episode_reward = 0; // To debug rewards
 
         public override void Initialize()
         {
+            total_steps = maxStep / 5;//this.gameObject.GetComponent<DecisionRequester>().DecisionPeriod;
             // Time.timeScale = 5;
             // Debug.Log(Thread.CurrentThread.ManagedThreadId);
             //Random.seed = Thread.CurrentThread.ManagedThreadId;
@@ -122,7 +124,7 @@ namespace UnityStandardAssets.Vehicles.Car
             Vector3 ball_relative_pos =
                 transform.InverseTransformDirection(ball.transform.position - transform.position);
             sensor.AddObservation(ball_relative_pos.x / 200.0f);
-            sensor.AddObservation((ball_relative_pos.y-2.1f) / 200.0f); // Make it zero if at same height
+            sensor.AddObservation((ball_relative_pos.y - 2.1f) / 200.0f); // Make it zero if at same height
             sensor.AddObservation(ball_relative_pos.z / 200.0f);
 
             Vector3 ball_relative_vel =
@@ -194,10 +196,10 @@ namespace UnityStandardAssets.Vehicles.Car
             // Debug.DrawLine(ray_pos, ray_pos + (Mathf.Clamp(back_hit.distance - 2f, 0, lidar_range))*back_ray_dir.normalized, Color.red, 0.1f);
             // if (this.gameObject.name == "CarSoccerRL_Blue")
             // {
-                // Debug.Log("Ball: ");
-                // Debug.Log(ball_relative_pos);
-                // Debug.Log("Front: " + front_distance);
-                // Debug.Log("Back: " + back_distance);
+            // Debug.Log("Ball: ");
+            // Debug.Log(ball_relative_pos);
+            // Debug.Log("Front: " + front_distance);
+            // Debug.Log("Back: " + back_distance);
             // }
 
             // In case we wanna add something but not retrain whole model
@@ -223,7 +225,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public void TouchedBall(string touching_team)
         {
-            float reward = 0.05f / maxStep;
+            float reward = 0.1f / total_steps;
             if (touching_team == team)
             {
                 add_reward(reward);
@@ -236,7 +238,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         private void OnCollisionStay(Collision collision)
         {
-            float reward = - 0.05f / maxStep;
+            float reward = -0.1f / total_steps;
             if (collision.gameObject.tag != "Ball")
             {
                 add_reward(reward);
@@ -245,7 +247,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         private void OnCollisionEnter(Collision collision)
         {
-            float reward = - 0.05f / maxStep;
+            float reward = -0.1f / total_steps;
             if (collision.gameObject.tag != "Ball")
             {
                 add_reward(reward);
