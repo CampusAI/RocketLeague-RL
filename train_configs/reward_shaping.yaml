@@ -1,28 +1,28 @@
 default:
     trainer: ppo
-    batch_size: 1500
-    buffer_size: 15000
+    batch_size: 9000
+    buffer_size: 90000
     lambd: 0.92
-    num_epoch: 3
-    time_horizon: 500
+    num_epoch: 4
+    time_horizon: 1000
     beta: 1.0e-4
-    epsilon: 0.2
-    hidden_units: 400
-    learning_rate: 1.0e-4
+    epsilon: 0.25
+    hidden_units: 500
+    learning_rate: 1.5e-4
     learning_rate_schedule: constant
     max_steps: 1.0e9
-    normalize: false
-    num_layers: 3
+    normalize: true
+    num_layers: 2
     sequence_length: 64
-    summary_freq: 500
+    summary_freq: 90000
     reward_signals:
         extrinsic:
             strength: 1
             gamma: 0.999
-        # curiosity:
-        #     strength: 0.005
-        #     gamma: 0.99
-        #     encoding_size: 256
+        curiosity:
+            strength: 0.002
+            gamma: 0.99
+            encoding_size: 256
     use_recurrent: false
     memory_size: 64
     self_play:
