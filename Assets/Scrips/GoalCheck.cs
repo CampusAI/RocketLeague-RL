@@ -81,12 +81,7 @@ namespace UnityStandardAssets.Vehicles.Car
             ball_to_blue.y = 0;
             ball_to_red.y = 0;
 
-            // Debug.DrawLine(this.transform.position, this.transform.position + 10*vel_dir);
-            // Debug.Log(Vector3.Angle(vel_dir, ball_to_blue));
-            // Debug.Log(Mathf.Cos(Vector3.Angle(vel_dir, ball_to_blue)*Mathf.PI/180));
-            // Debug.Log("############");
-
-            float factor = 0.3f/(5.0f*players[0].GetComponent<CarRLAgent>().maxStep);
+            float factor = 0.001f/(players[0].GetComponent<CarRLAgent>().maxStep);
             float red_reward = factor*Mathf.Cos(Vector3.Angle(vel_dir, ball_to_blue)*Mathf.PI/180);
             float blue_reward = factor*Mathf.Cos(Vector3.Angle(vel_dir, ball_to_red)*Mathf.PI/180);
             

@@ -238,7 +238,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         private void OnCollisionStay(Collision collision)
         {
-            float reward = -0.1f / total_steps;
+            float reward = -0.5f / total_steps;
             if (collision.gameObject.tag != "Ball")
             {
                 add_reward(reward);
@@ -247,7 +247,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         private void OnCollisionEnter(Collision collision)
         {
-            float reward = -0.1f / total_steps;
+            float reward = -0.5f / total_steps;
             if (collision.gameObject.tag != "Ball")
             {
                 add_reward(reward);
@@ -256,12 +256,12 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public void add_reward(float reward)
         { // This is to debug episode reward
-            // if (this.gameObject.name == "CarSoccerRL_Blue")
-            // {
-            //     episode_reward += reward;
-            //     Debug.Log("Adding: " + reward.ToString());
-            //     Debug.Log("Summing:" + episode_reward.ToString());
-            // }
+            if (this.gameObject.name == "CarSoccerRL_Blue")
+            {
+                episode_reward += reward;
+                Debug.Log("Adding: " + reward.ToString());
+                Debug.Log("Summing:" + episode_reward.ToString());
+            }
             AddReward(reward);
         }
     }

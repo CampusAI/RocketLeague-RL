@@ -20,14 +20,14 @@ default:
             strength: 1
             gamma: 0.999
         curiosity:
-            strength: 0.005
+            strength: 0.003
             gamma: 0.99
             encoding_size: 256
     use_recurrent: false
     memory_size: 64
-    self_play:
-        window: 10
-        play_against_current_self_ratio: 0.5
-        save_steps: 100000
-        swap_steps: 100000
-        team_change: 200000
+    # self_play:
+    #     window: 10
+    #     play_against_current_self_ratio: 0.5
+    #     save_steps: 100000
+    #     swap_steps: 100000
+    #     team_change: 200000
