@@ -1,14 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿// using System.Collections;
+// using System.Collections.Generic;
+// using UnityEngine;
+// using Barracuda;
+// using MLAgents;
+// using MLAgents.Sensors;
+using MLAgents.Policies;
+// using MLAgents.SideChannels;
+// // using System;
+// using System.Threading;
+using System.Collections;
 using UnityEngine;
 using MLAgents;
+using Barracuda;
 using MLAgents.Sensors;
-using MLAgents.Policies;
-// using System;
-using System.Threading;
+using MLAgents.SideChannels;
+using System.Collections.Generic;
 
-namespace UnityStandardAssets.Vehicles.Car
-{
+// namespace UnityStandardAssets.Vehicles.Car
+// {
     public class CarRLAgent_1v1 : Agent
     {
         private string team;
@@ -18,7 +27,7 @@ namespace UnityStandardAssets.Vehicles.Car
         private Vector3 initial_position;
         private Quaternion initial_rotation;
 
-        private CarController car_controller;
+        private UnityStandardAssets.Vehicles.Car.CarController car_controller;
         private BehaviorParameters m_BehaviorParameters;
         private Rigidbody self_rBody, ball_rBody;
         private GoalCheck_1v1 goalCheck;
@@ -26,10 +35,14 @@ namespace UnityStandardAssets.Vehicles.Car
         // private AgentAgentHelper AgentHelper = new AgentAgentHelper();
         private float total_steps;
         private float episode_reward = 0; // To debug rewards
+        
+        [HideInInspector]
+        public FloatPropertiesChannel m_FloatProperties;
 
         public override void Initialize()
         {
             total_steps = maxStep / 5;//this.gameObject.GetComponent<DecisionRequester>().DecisionPeriod;
+            // m_FloatProperties = SideChannels.GetSideChannel<FloatPropertiesChannel>();
             // Time.timeScale = 1;
             // Debug.Log(Thread.CurrentThread.ManagedThreadId);
             //Random.seed = Thread.CurrentThread.ManagedThreadId;
@@ -39,7 +52,7 @@ namespace UnityStandardAssets.Vehicles.Car
             parent = this.transform.parent;
             ball = parent.Find("Soccer Ball").gameObject;
             m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
-            car_controller = GetComponent<CarController>();
+            car_controller = GetComponent<UnityStandardAssets.Vehicles.Car.CarController>();
             self_rBody = GetComponent<Rigidbody>();
             ball_rBody = ball.GetComponent<Rigidbody>();
             goalCheck = ball.GetComponent<GoalCheck_1v1>();
@@ -77,21 +90,27 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public override void OnEpisodeBegin()
         {
+            episode_reward = 0;
             goalCheck.ResetGame();
 
+            // Get variables from curricula
+            float car_pos_offset = Academy.Instance.FloatProperties.GetPropertyWithDefault("car_pos_offset", 0);
+            float car_rot_offset = Academy.Instance.FloatProperties.GetPropertyWithDefault("car_rot_offset", 0);
+            float car_vel_offset = Academy.Instance.FloatProperties.GetPropertyWithDefault("car_vel_offset", 0);
+
             // Position
-            float x_pos = goalCheck.ball_spawn_point.transform.position.x + Random.Range(-70, 70);
-            float z_pos = goalCheck.ball_spawn_point.transform.position.z + Random.Range(-30, 30);
+            float x_pos = goalCheck.ball_spawn_point.transform.position.x - 30f + Random.Range(-car_pos_offset, car_pos_offset);
+            float z_pos = goalCheck.ball_spawn_point.transform.position.z + Random.Range(-car_pos_offset, car_pos_offset);
             Vector3 new_pos = new Vector3(x_pos, initial_position.y, z_pos);
             this.transform.position = new_pos;
 
             // Velocity
-            this.self_rBody.velocity = new Vector3(AgentHelper.NextGaussian(0, 7), 0, AgentHelper.NextGaussian(0, 7));
+            this.self_rBody.velocity = new Vector3(AgentHelper.NextGaussian(0, car_vel_offset), 0, AgentHelper.NextGaussian(0, car_vel_offset));
 
             // Initial rotation with noise
             this.transform.rotation = initial_rotation;
             var euler = this.transform.eulerAngles;
-            euler.y += Random.Range(-180, 180);
+            euler.y += Random.Range(-car_rot_offset, car_rot_offset);
             this.transform.eulerAngles = euler;
         }
 
@@ -124,15 +143,19 @@ namespace UnityStandardAssets.Vehicles.Car
             sensor.AddObservation(velocity_relative.x / 50f);  // Drift speed
             sensor.AddObservation(velocity_relative.z / 50f);
 
-            Vector3 own_goal_relative_pos =
-                transform.InverseTransformDirection(own_goal.transform.position - transform.position);
-            sensor.AddObservation(own_goal_relative_pos.x / 200.0f);
-            sensor.AddObservation(own_goal_relative_pos.z / 200.0f);
+            // Vector3 own_goal_relative_pos =
+            //     transform.InverseTransformDirection(own_goal.transform.position - transform.position);
+            // sensor.AddObservation(own_goal_relative_pos.x / 200.0f);
+            // sensor.AddObservation(own_goal_relative_pos.z / 200.0f);
 
-            Vector3 other_goal_relative_pos =
-                transform.InverseTransformDirection(other_goal.transform.position - transform.position);
-            sensor.AddObservation(other_goal_relative_pos.x / 200.0f);
-            sensor.AddObservation(other_goal_relative_pos.z / 200.0f);
+            // Vector3 other_goal_relative_pos =
+            //     transform.InverseTransformDirection(other_goal.transform.position - transform.position);
+            // sensor.AddObservation(other_goal_relative_pos.x / 200.0f);
+            // sensor.AddObservation(other_goal_relative_pos.z / 200.0f);
+            sensor.AddObservation(0.0f);
+            sensor.AddObservation(0.0f);
+            sensor.AddObservation(0.0f);
+            sensor.AddObservation(0.0f);
 
             // Vector3 enemy_rel_pos =
             //     transform.InverseTransformDirection(enemies[0].transform.position - transform.position);
@@ -262,4 +285,4 @@ namespace UnityStandardAssets.Vehicles.Car
         }
 
     }
-}
+// }
