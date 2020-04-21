@@ -1,7 +1,7 @@
 BigWallJump:
   measure: reward
-  thresholds: [-4.0, -1.5, -0.2]
-  min_lesson_length: 100
+  thresholds: [0.1, 0.1, 0.1]
+  min_lesson_length: 2
   signal_smoothing: true
   parameters:
     car_pos_offset: [0, 10, 20, 30]

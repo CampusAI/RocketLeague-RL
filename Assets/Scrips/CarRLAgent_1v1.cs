@@ -36,13 +36,15 @@ using System.Collections.Generic;
         private float total_steps;
         private float episode_reward = 0; // To debug rewards
         
-        [HideInInspector]
-        public FloatPropertiesChannel m_FloatProperties;
+        // [HideInInspector]
+        // public FloatPropertiesChannel m_FloatProperties;
+        CurriculumManager cv_manager;
 
         public override void Initialize()
         {
             total_steps = maxStep / 5;//this.gameObject.GetComponent<DecisionRequester>().DecisionPeriod;
             // m_FloatProperties = SideChannels.GetSideChannel<FloatPropertiesChannel>();
+            cv_manager = new CurriculumManager();
             // Time.timeScale = 1;
             // Debug.Log(Thread.CurrentThread.ManagedThreadId);
             //Random.seed = Thread.CurrentThread.ManagedThreadId;
@@ -90,13 +92,17 @@ using System.Collections.Generic;
 
         public override void OnEpisodeBegin()
         {
+            // Debug.Log("Episode begin!");
+            cv_manager.LogReward(episode_reward);
             episode_reward = 0;
-            goalCheck.ResetGame();
+
+            var pars = cv_manager.GetParams();
+            goalCheck.ResetGame(pars);
 
             // Get variables from curricula
-            float car_pos_offset = Academy.Instance.FloatProperties.GetPropertyWithDefault("car_pos_offset", 0);
-            float car_rot_offset = Academy.Instance.FloatProperties.GetPropertyWithDefault("car_rot_offset", 0);
-            float car_vel_offset = Academy.Instance.FloatProperties.GetPropertyWithDefault("car_vel_offset", 0);
+            float car_pos_offset = pars["car_pos_offset"];
+            float car_rot_offset = pars["car_rot_offset"];
+            float car_vel_offset = pars["car_vel_offset"];
 
             // Position
             float x_pos = goalCheck.ball_spawn_point.transform.position.x - 30f + Random.Range(-car_pos_offset, car_pos_offset);
@@ -199,7 +205,6 @@ using System.Collections.Generic;
 
         public override void OnActionReceived(float[] vectorAction)
         {
-            add_reward(-1f / total_steps);
             // Reward forward speed
             // float forward_speed = transform.InverseTransformDirection(self_rBody.velocity).z;
             // if (forward_speed > 0.5) {
@@ -225,6 +230,10 @@ using System.Collections.Generic;
 
             car_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1], 0.0f);
             //draw_rew_dir(7);
+        }
+
+        void Update() {
+            add_reward(-1f / maxStep);    
         }
 
 
@@ -275,9 +284,10 @@ using System.Collections.Generic;
 
         public void add_reward(float reward)
         { // This is to debug episode reward
+            episode_reward += reward;
+
             // if (this.gameObject.name == "CarSoccerRL_Blue")
             // {
-            //     episode_reward += reward;
             //     Debug.Log("Adding: " + reward.ToString());
             //     Debug.Log("Summing:" + episode_reward.ToString());
             // }

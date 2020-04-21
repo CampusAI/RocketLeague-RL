@@ -8,154 +8,165 @@ using MLAgents.Policies;
 
 // namespace UnityStandardAssets.Vehicles.Car
 // {
-    public class GoalCheck_1v1 : MonoBehaviour
+public class GoalCheck_1v1 : MonoBehaviour
+{
+    public GameObject ball_spawn_point;
+    public int blue_score = 0;
+    public int red_score = 0;
+    private List<GameObject> players;
+    Vector3 blue_goal_pos, red_goal_pos;
+
+    // Start is called before the first frame update
+    void Start()
     {
-        public GameObject ball_spawn_point;
-        public int blue_score = 0;
-        public int red_score = 0;
-        private List<GameObject> players;
-        Vector3 blue_goal_pos, red_goal_pos;
+        transform.position = ball_spawn_point.transform.position;
+        players = new List<GameObject>();
+        players.AddRange(AgentHelper.FindGameObjectInChildWithTag(transform.parent, "Blue"));
+        players.AddRange(AgentHelper.FindGameObjectInChildWithTag(transform.parent, "Red"));
+        blue_goal_pos = transform.parent.Find("Blue_goal").gameObject.transform.position;
+        red_goal_pos = transform.parent.Find("Red_goal").gameObject.transform.position;
+    }
 
-        // Start is called before the first frame update
-        void Start()
+    public void ResetGame(Dictionary<string, float> pars = null)
+    {
+        ResetBall(pars);
+        blue_score = 0;
+        red_score = 0;
+    }
+    private bool fix_vel = true;
+    public void ResetBall(Dictionary<string, float> pars = null)
+    {
+        float ball_pos_offset = 0;
+        float ball_rot_offset = 0;
+        float ball_vel_offset = 0;
+        if (pars != null)
         {
-            transform.position = ball_spawn_point.transform.position;
-            players = new List<GameObject>();
-            players.AddRange(AgentHelper.FindGameObjectInChildWithTag(transform.parent, "Blue"));
-            players.AddRange(AgentHelper.FindGameObjectInChildWithTag(transform.parent, "Red"));
-            blue_goal_pos = transform.parent.Find("Blue_goal").gameObject.transform.position;
-            red_goal_pos = transform.parent.Find("Red_goal").gameObject.transform.position;
+            ball_pos_offset = pars["ball_pos_offset"];
+            ball_rot_offset = pars["ball_rot_offset"];
+            ball_vel_offset = pars["ball_vel_offset"];
         }
+        if (ball_vel_offset != 0) fix_vel = false;
 
-        public void ResetGame()
+        float x_pos = ball_spawn_point.transform.position.x + Random.Range(-ball_pos_offset, ball_pos_offset);
+        float z_pos = ball_spawn_point.transform.position.z + Random.Range(-ball_pos_offset, ball_pos_offset);
+        Vector3 new_pos = new Vector3(x_pos, ball_spawn_point.transform.position.y - 2.0f, z_pos);
+        this.transform.position = new_pos;
+        GetComponent<Rigidbody>().velocity = new Vector3(AgentHelper.NextGaussian(0, ball_vel_offset), 0, AgentHelper.NextGaussian(0, ball_vel_offset));
+        GetComponent<Rigidbody>().angularVelocity = new Vector3(AgentHelper.NextGaussian(0, ball_rot_offset), AgentHelper.NextGaussian(0, ball_rot_offset), AgentHelper.NextGaussian(0, 5));
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        //Debug.Log(collision.gameObject.name);
+        // if (collision.gameObject.name == "Blue_goal")
+        // {
+        //     red_score = red_score + 1;
+        //     foreach (GameObject player in players)
+        //         player.gameObject.GetComponent<CarRLAgent_1v1>().goal("Red");
+        //     ResetBall();
+        // }
+        // if (collision.gameObject.name == "Red_goal")
+        // {
+        //     blue_score = blue_score + 1;
+        //     foreach (GameObject player in players)
+        //         player.gameObject.GetComponent<CarRLAgent_1v1>().goal("Blue");
+        //     ResetBall();
+        // }
+        // If collided with a car
+        if (collision.gameObject.tag == "Blue" || collision.gameObject.tag == "Red")
         {
-            ResetBall();
-            blue_score = 0;
-            red_score = 0;
+            // foreach (GameObject player in players)
+            //     player.gameObject.GetComponent<CarRLAgent_1v1>().TouchedBall(collision.gameObject.tag);
+            GiveFinalRewardsAndEnd(1f, -1f);
         }
-        public void ResetBall()
-        {
-            float ball_pos_offset = Academy.Instance.FloatProperties.GetPropertyWithDefault("ball_pos_offset", 0);
-            float ball_rot_offset = Academy.Instance.FloatProperties.GetPropertyWithDefault("ball_rot_offset", 0);
-            float ball_vel_offset = Academy.Instance.FloatProperties.GetPropertyWithDefault("ball_vel_offset", 0);
+    }
 
-            float x_pos = ball_spawn_point.transform.position.x + Random.Range(-ball_pos_offset, ball_pos_offset);
-            float z_pos = ball_spawn_point.transform.position.z + Random.Range(-ball_pos_offset, ball_pos_offset);
-            Vector3 new_pos = new Vector3(x_pos, ball_spawn_point.transform.position.y-2.0f, z_pos);
-            this.transform.position = new_pos;
-            GetComponent<Rigidbody>().velocity = new Vector3(AgentHelper.NextGaussian(0, ball_vel_offset), 0, AgentHelper.NextGaussian(0, ball_vel_offset));
-            GetComponent<Rigidbody>().angularVelocity = new Vector3(AgentHelper.NextGaussian(0, ball_rot_offset), AgentHelper.NextGaussian(0, ball_rot_offset), AgentHelper.NextGaussian(0, 5));
-        }
-        private void OnCollisionEnter(Collision collision)
-        {
-            //Debug.Log(collision.gameObject.name);
-            // if (collision.gameObject.name == "Blue_goal")
-            // {
-            //     red_score = red_score + 1;
-            //     foreach (GameObject player in players)
-            //         player.gameObject.GetComponent<CarRLAgent_1v1>().goal("Red");
-            //     ResetBall();
-            // }
-            // if (collision.gameObject.name == "Red_goal")
-            // {
-            //     blue_score = blue_score + 1;
-            //     foreach (GameObject player in players)
-            //         player.gameObject.GetComponent<CarRLAgent_1v1>().goal("Blue");
-            //     ResetBall();
-            // }
-            // If collided with a car
-            if (collision.gameObject.tag == "Blue" || collision.gameObject.tag == "Red")
-            {
-                // foreach (GameObject player in players)
-                //     player.gameObject.GetComponent<CarRLAgent_1v1>().TouchedBall(collision.gameObject.tag);
-                GiveFinalRewardsAndEnd(1f, -1f);
-            }
-        }
-
-        public void FixedUpdate()
+    public void FixedUpdate()
+    {
+        if (fix_vel)
         {
             GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
             GetComponent<Rigidbody>().angularVelocity = new Vector3(0, 0, 0);
-            CheckWin();
-            // RewardField();
-            // RewardBallVelocity();
         }
+        CheckWin();
+        // RewardField();
+        // RewardBallVelocity();
+    }
 
-        public void RewardBallVelocity()
+    public void RewardBallVelocity()
+    {
+        // Vector3 vel_dir = this.gameObject.GetComponent<Rigidbody>().velocity;
+        // Vector3 ball_to_blue = blue_goal_pos - this.transform.position;
+        // Vector3 ball_to_red = red_goal_pos - this.transform.position;
+        // vel_dir.y = 0;
+        // ball_to_blue.y = 0;
+        // ball_to_red.y = 0;
+
+        // float factor = 0.5f/(players[0].GetComponent<CarRLAgent_1v1>().maxStep);
+        // float red_reward = factor*Mathf.Cos(Vector3.Angle(vel_dir, ball_to_blue)*Mathf.PI/180);
+        // float blue_reward = factor*Mathf.Cos(Vector3.Angle(vel_dir, ball_to_red)*Mathf.PI/180);
+
+        // if ((Mathf.Abs(red_reward) + Mathf.Abs(blue_reward))/factor < 0.5)
+        //     return;
+
+        // foreach (GameObject player in players)
+        // {
+        //     CarRLAgent_1v1 script = player.GetComponent<CarRLAgent_1v1>();
+        //     if (script.GetTeam() == "Blue")
+        //     {
+        //         script.add_reward(blue_reward - red_reward);
+        //     }
+        //     else if (script.GetTeam() == "Red")
+        //     {
+        //         script.add_reward(red_reward - blue_reward);
+        //     }
+        //     else
+        //     {
+        //         throw new System.Exception("UNKNOWN AGENT TAG");
+        //     }
+        // }
+    }
+    public void CheckWin()
+    {
+        int step = players[0].GetComponent<CarRLAgent_1v1>().StepCount;
+        int max_steps = players[0].GetComponent<CarRLAgent_1v1>().maxStep;
+        if (step >= max_steps - 10)
         {
-            // Vector3 vel_dir = this.gameObject.GetComponent<Rigidbody>().velocity;
-            // Vector3 ball_to_blue = blue_goal_pos - this.transform.position;
-            // Vector3 ball_to_red = red_goal_pos - this.transform.position;
-            // vel_dir.y = 0;
-            // ball_to_blue.y = 0;
-            // ball_to_red.y = 0;
-
-            // float factor = 0.5f/(players[0].GetComponent<CarRLAgent_1v1>().maxStep);
-            // float red_reward = factor*Mathf.Cos(Vector3.Angle(vel_dir, ball_to_blue)*Mathf.PI/180);
-            // float blue_reward = factor*Mathf.Cos(Vector3.Angle(vel_dir, ball_to_red)*Mathf.PI/180);
-            
-            // if ((Mathf.Abs(red_reward) + Mathf.Abs(blue_reward))/factor < 0.5)
-            //     return;
-
-            // foreach (GameObject player in players)
-            // {
-            //     CarRLAgent_1v1 script = player.GetComponent<CarRLAgent_1v1>();
-            //     if (script.GetTeam() == "Blue")
-            //     {
-            //         script.add_reward(blue_reward - red_reward);
-            //     }
-            //     else if (script.GetTeam() == "Red")
-            //     {
-            //         script.add_reward(red_reward - blue_reward);
-            //     }
-            //     else
-            //     {
-            //         throw new System.Exception("UNKNOWN AGENT TAG");
-            //     }
-            // }
-        }
-        public void CheckWin()
-        {
-            int step = players[0].GetComponent<CarRLAgent_1v1>().StepCount;
-            int max_steps = players[0].GetComponent<CarRLAgent_1v1>().maxStep;
-            if (step >= max_steps - 10)
+            if (blue_score == red_score)
             {
-                if (blue_score == red_score)
-                {
-                    GiveFinalRewardsAndEnd(0f, 0f);
-                }
-                else if (blue_score > red_score)
-                {
-                    GiveFinalRewardsAndEnd(3f, -3f);
-                }
-                else
-                {
-                    GiveFinalRewardsAndEnd(-3f, 3f);
-                }
+                GiveFinalRewardsAndEnd(0f, 0f);
             }
-        }
-
-        void GiveFinalRewardsAndEnd(float blue_reward, float red_reward)
-        {
-            foreach (GameObject player in players)
+            else if (blue_score > red_score)
             {
-                CarRLAgent_1v1 script = player.GetComponent<CarRLAgent_1v1>();
-
-                if (script.GetTeam() == "Blue")
-                {
-                    script.add_reward(blue_reward);
-                    script.EndEpisode();
-                }
-                else if (script.GetTeam() == "Red")
-                {
-                    script.add_reward(red_reward);
-                    script.EndEpisode();
-                }
-                else
-                {
-                    throw new System.Exception("UNKNOWN AGENT TAG");
-                }
+                GiveFinalRewardsAndEnd(3f, -3f);
+            }
+            else
+            {
+                GiveFinalRewardsAndEnd(-3f, 3f);
             }
         }
     }
+
+    void GiveFinalRewardsAndEnd(float blue_reward, float red_reward)
+    {
+        foreach (GameObject player in players)
+        {
+            CarRLAgent_1v1 script = player.GetComponent<CarRLAgent_1v1>();
+
+            if (script.GetTeam() == "Blue")
+            {
+                script.add_reward(blue_reward);
+                script.EndEpisode();
+            }
+            else if (script.GetTeam() == "Red")
+            {
+                script.add_reward(red_reward);
+                script.EndEpisode();
+            }
+            else
+            {
+                throw new System.Exception("UNKNOWN AGENT TAG");
+            }
+        }
+    }
+}
 // }
